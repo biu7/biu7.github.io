@@ -14,6 +14,8 @@ DEFAULT_LANG = 'zh'
 
 THEME = "attila"
 
+HEADER_COLOR = "black"
+
 BEIAN = "豫ICP备18037159号"
 
 # Feed generation is usually not desired when developing
@@ -30,8 +32,21 @@ LINKS = (('Pelican', 'http://getpelican.com/'),
          ('You can modify those links in your config file', '#'),)
 
 # Social widget
-SOCIAL = (('You can add links in your config file', '#'),
-          ('Another social link', '#'),)
+SOCIAL = (
+    ('github', 'https://github.com/panjiajia01'),
+)
+
+AUTHORS_BIO = {
+  "qi": {
+    "name": "七",
+    "cover": "https://arulrajnet.github.io/attila-demo/assets/images/avatar.png",
+    "image": "https://arulrajnet.github.io/attila-demo/assets/images/avatar.png",
+    "website": "https://www.biubiu7.cn",
+    "location": "ShangHai/China",
+    "bio": "爬虫 / Android/ 逆向工程师，数据科学萌新，主要语言 Python、Java、Golang"
+  }
+}
+
 
 DEFAULT_PAGINATION = 10
 
@@ -45,3 +60,7 @@ EXTRA_PATH_METADATA = {
     'assets/favicon.ico': {'path': 'favicon.ico'},
     'assets/CNAME': {'path': 'CNAME'}
 }
+
+ARTICLE_URL = '{date:%Y}/{date:%m}/{date:%d}/{slug}/'
+ARTICLE_SAVE_AS = '{date:%Y}/{date:%m}/{date:%d}/{slug}/index.html'
+
