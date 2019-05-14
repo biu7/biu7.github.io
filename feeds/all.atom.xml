@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>biubiu7</title><link href="/" rel="alternate"></link><link href="/feeds/all.atom.xml" rel="self"></link><id>/</id><updated>2017-11-27T12:30:00+08:00</updated><entry><title>python3爬虫-烂大街的新浪微博之移动版网页登录</title><link href="/%E6%96%B0%E6%B5%AA%E5%BE%AE%E5%8D%9A.html" rel="alternate"></link><published>2017-11-26T10:01:00+08:00</published><updated>2017-11-27T12:30:00+08:00</updated><author><name>qi</name></author><id>tag:None,2017-11-26:/新浪微博.html</id><summary type="html">&lt;p&gt;新浪微博的模拟登录已经要被大家写烂了，不过我倒是真的没有写过，为了博客不这么空荡荡的我还是得写一写的。。。&lt;/p&gt;</summary><content type="html">&lt;h4&gt;前言&lt;/h4&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>biubiu7</title><link href="/" rel="alternate"></link><link href="/feeds/all.atom.xml" rel="self"></link><id>/</id><updated>2019-05-14T13:00:00+08:00</updated><entry><title>Magisk 导致 ro.debuggable 修改无效的排查处理</title><link href="/2019/05/14/Magisk-Hide-debuggable/" rel="alternate"></link><published>2019-05-14T13:00:00+08:00</published><updated>2019-05-14T13:00:00+08:00</updated><author><name>qi</name></author><id>tag:None,2019-05-14:/2019/05/14/Magisk-Hide-debuggable/</id><summary type="html">&lt;p&gt;做逆向时免不了几个操作：设置 ro.debuggable=1、root、xposed 。在 supersu 被国内公司收购之后， Magisk 成了 Android 设备 root 的第一选择。但是今天发现 magisk 的安装竟然会导致 ro.debuggable=1 的设置失效？&lt;/p&gt;</summary><content type="html">&lt;h4&gt;简介&lt;/h4&gt;
+&lt;p&gt;做逆向时免不了几个操作：设置 ro.debuggable=1、root、xposed 。在 supersu 被国内公司收购之后， Magisk 成了 Android 设备 root 的第一选择。但是今天发现 magisk 的安装竟然会导致 ro.debuggable=1 的设置失效？&lt;/p&gt;
+&lt;h4&gt;前情&lt;/h4&gt;
+&lt;p&gt;之前一直使用正常的测试机 nexus 5，由于被同事借来借去，搞得手机里一团糟，因此打算直接重新刷机，还它一片碧水蓝天。nexus 5 刷机及逆向所需配置见 [此处还没写哈哈哈哈]，此处略过。&lt;/p&gt;
+&lt;p&gt;在之前，我是使用 xposed 的模块 &lt;a href="https://github.com/riusksk/BDOpener"&gt;BDOpener&lt;/a&gt; 来直接开启调试，而非手动修改 ro.debuggable 的值，但是本次我打算直接改掉它，一劳永逸：&lt;a href="https://bbs.pediy.com/thread-197334.htm"&gt;修改Nexus5的boot.img - 打开系统调试   &lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;在修改完 ro.debuggable=1 并重新刷入 boot.img 之后，顺手装上了 Magisk 作为 root 管理，并准备直接使用 magisk 安装 systemless 版的 xposed 框架来使用。全部装完之后，插上电脑准备看看 ro.debuggable 的修改生效了没，adb shell 进入 Android shell，getprop ro.debuggable 获取一下值，如下图：
+&lt;img alt="图片1" src="https://img-1251994035.cos.ap-shanghai.myqcloud.com/blog/201905140001.png"&gt;
+似乎没生效？？？&lt;/p&gt;
+&lt;h4&gt;问题排查&lt;/h4&gt;
+&lt;p&gt;查看 default.prop 文件中 ro.debuggable 的配置：
+&lt;img alt="图片2" src="https://img-1251994035.cos.ap-shanghai.myqcloud.com/blog/201905140002.png"&gt;
+配置似乎没有问题，说明之前的 boot.img 的修改是生效的。那么结合到 Magisk 的主要功能，这个大概就是 Magisk 的锅了。尝试完全卸载 Magisk 之后再查看 ro.dubuggable 的值，果然就是 1 了。&lt;/p&gt;
+&lt;p&gt;google 了一下，发现 MagiskHide 确实会修改 ro.debuggable 等参数的值来使手机更容易通过安全检查：&lt;a href="https://github.com/Magisk-Modules-Repo/MagiskHidePropsConf#setreset-magiskhide-sensitive-props"&gt;此处是文档&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;注：部分应用会检测手机是否 root、是否安装了 Magisk 、xposed 等框架、甚至是否打开了 usb 调试，比如交通银行买单吧检测 root 退出、中国移动检测 root 和 xposed 闪退或卡启动页、微信检测 xposed 封号等，MagiskHide 能够一定程度上隐藏手机的 root 及 Magisk 安装情况。&lt;/p&gt;
+&lt;h4&gt;解决&lt;/h4&gt;
+&lt;p&gt;既然知道了原因，自然有办法解决。Magisk 自身提供了 Resetprop 方法来修改系统属性值，不过经测试似乎不能持久化修改，即重启后修改后的值会恢复，我们使用 Magisk 模块 &lt;a href="https://forum.xda-developers.com/apps/magisk/module-magiskhide-props-config-t3789228"&gt;MagiskHide Props Config&lt;/a&gt;来修改就好。&lt;/p&gt;
+&lt;p&gt;在 Magisk 自带的下载中搜索，然后安装、重启。重启后 adb shell 进入 shell，输入 props 回车，输入 4 选择 Edit MagiskHide props，然后选择修改 ro.debuggable ，之后按照提示一路 y 过去，重启后再查看 ro.debuggable ,已经 ok 了，电脑打开 DDMS 查看，也能够看到手机上的进程，完事儿。&lt;/p&gt;</content><category term="逆向"></category><category term="爬虫"></category></entry><entry><title>python3爬虫-烂大街的新浪微博之移动版网页登录</title><link href="/2017/11/26/%E6%96%B0%E6%B5%AA%E5%BE%AE%E5%8D%9A/" rel="alternate"></link><published>2017-11-26T10:01:00+08:00</published><updated>2017-11-27T12:30:00+08:00</updated><author><name>qi</name></author><id>tag:None,2017-11-26:/2017/11/26/新浪微博/</id><summary type="html">&lt;p&gt;新浪微博的模拟登录已经要被大家写烂了，不过我倒是真的没有写过，为了博客不这么空荡荡的我还是得写一写的。。。&lt;/p&gt;</summary><content type="html">&lt;h4&gt;前言&lt;/h4&gt;
 &lt;p&gt;新浪微博的模拟登录已经要被大家写烂了，不过我倒是真的没有写过，为了博客不这么空荡荡的我还是得写一写的。。。&lt;/p&gt;
 &lt;h4&gt;抓包&lt;/h4&gt;
 &lt;p&gt;微博的移动版页面登陆时比较简单的，我们抓包看一下,过滤掉js、css和图片请求之后：
-&lt;img alt="" src="https://img.biubiu7.cn/sinaweibo/sina_wap_login_1.png"&gt;&lt;/p&gt;
+&lt;img alt="图片1" src="https://img.biubiu7.cn/sinaweibo/sina_wap_login_1.png"&gt;&lt;/p&gt;
 &lt;p&gt;很明显最后一个就是登录请求，post参数和返回信息如下图：
-&lt;img alt="" src="https://img.biubiu7.cn/sinaweibo/sina_wap_login_2.png"&gt;
+&lt;img alt="图片2" src="https://img.biubiu7.cn/sinaweibo/sina_wap_login_2.png"&gt;
 看上去没有加密，并且其他的参数看上去也都是一些固定参数，是一个比较简单的请求，我们直接来写代码。&lt;/p&gt;
 &lt;h4&gt;代码&lt;/h4&gt;
 &lt;p&gt;由于模拟登录需要保持cookie，所以我们需要使用requests.Session类来保持回话。从charles（或者你使用的其他抓包工具）中复制出请求链接，初始化requests.Session对象然后进行请求，代码如下：&lt;/p&gt;
@@ -46,16 +62,16 @@
 
 
 &lt;p&gt;运行一下，看到输出：
-&lt;img alt="" src="https://img.biubiu7.cn/sinaweibo/sina_wap_login_3.png"&gt;&lt;/p&gt;
+&lt;img alt="图片3" src="https://img.biubiu7.cn/sinaweibo/sina_wap_login_3.png"&gt;&lt;/p&gt;
 &lt;p&gt;看到没有输出错误信息，表示我们已经登录成功了。然后我们尝试获取一下登录后的个人信息，来确定我们登录成功。从抓包工具中拿到链接后放进代码中进行请求：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;if login_resp.json()[&amp;#39;retcode&amp;#39;] == 20000000:
-    profile_resp = s.get(PROFILE_URL)
-    print(f&amp;#39;登录成功，微博昵称为{profile_resp.json()[&amp;quot;data&amp;quot;][&amp;quot;user&amp;quot;][&amp;quot;screen_name&amp;quot;]}&amp;#39;)
-else:
-    print(f&amp;#39;登陆失败，{login_resp.json()[&amp;quot;msg&amp;quot;]}&amp;#39;)
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nv"&gt;login_resp&lt;/span&gt;.&lt;span class="nv"&gt;json&lt;/span&gt;&lt;span class="ss"&gt;()&lt;/span&gt;[&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="s"&gt;retcode&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;] &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;20000000&lt;/span&gt;:
+    &lt;span class="nv"&gt;profile_resp&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;s&lt;/span&gt;.&lt;span class="nv"&gt;get&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;PROFILE_URL&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;
+    &lt;span class="nv"&gt;print&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;f&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="s"&gt;登录成功，微博昵称为{profile_resp.json()[&amp;quot;data&amp;quot;][&amp;quot;user&amp;quot;][&amp;quot;screen_name&amp;quot;]}&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;else&lt;/span&gt;:
+    &lt;span class="nv"&gt;print&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;f&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="s"&gt;登陆失败，{login_resp.json()[&amp;quot;msg&amp;quot;]}&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;运行：&lt;/p&gt;
-&lt;p&gt;&lt;img alt="" src="https://img.biubiu7.cn/sinaweibo/sina_wap_login_4.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="图片4" src="https://img.biubiu7.cn/sinaweibo/sina_wap_login_4.png"&gt;&lt;/p&gt;
 &lt;p&gt;完美。微博的移动端模拟登录难度几乎为0，所以下一篇会写一下电脑网页版的登录。&lt;/p&gt;</content><category term="python"></category><category term="爬虫"></category></entry></feed>
