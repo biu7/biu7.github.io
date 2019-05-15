@@ -64,3 +64,11 @@ EXTRA_PATH_METADATA = {
 ARTICLE_URL = '{date:%Y}/{date:%m}/{date:%d}/{slug}/'
 ARTICLE_SAVE_AS = '{date:%Y}/{date:%m}/{date:%d}/{slug}/index.html'
 
+# 文章评论，使用gitalk
+GITALK_CLIENTID = '6214d54e6d518aaa2f6a'
+GITALK_CLIENT_SECRET = '9f76763102db0d037a87dcffbfd88f3a45f723f9'
+GITALK_REPO = 'panjiajia01.github.io'
+GITALK_OWNER = 'panjiajia01'
+GITALK_ADMIN = ['panjiajia01']
+GITALK_DISTRACTION_FREE_MODE = 'false'
+
