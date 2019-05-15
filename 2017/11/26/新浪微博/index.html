@@ -241,6 +241,28 @@
                 </aside>
 
             </div>
+        <!-- Gitalk 评论 start  -->
+
+            <!-- Link Gitalk 的支持文件  -->
+            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+            <script src="https://unpkg.com/gitalk@latest/dist/gitalk.min.js"></script>
+            <div id="gitalk-container"></div>
+            <script type="text/javascript">
+                var gitalk = new Gitalk({
+
+                // gitalk的主要参数
+                    clientID: "6214d54e6d518aaa2f6a",
+                    clientSecret: "9f76763102db0d037a87dcffbfd88f3a45f723f9",
+                    repo: "panjiajia01.github.io",
+                    owner: "panjiajia01",
+                    admin: ['panjiajia01'],
+                    id: window.location.pathname,
+                    distractionFreeMode: false,
+
+                });
+                gitalk.render('gitalk-container');
+            </script>
+            <!-- Gitalk end -->
         </article>
     </main>
       <!-- TODO : Body class -->
