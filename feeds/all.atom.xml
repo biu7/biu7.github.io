@@ -64,11 +64,11 @@
 &lt;p&gt;运行一下，看到输出：
 &lt;img alt="图片3" src="https://img.biubiu7.cn/sinaweibo/sina_wap_login_3.png"&gt;&lt;/p&gt;
 &lt;p&gt;看到没有输出错误信息，表示我们已经登录成功了。然后我们尝试获取一下登录后的个人信息，来确定我们登录成功。从抓包工具中拿到链接后放进代码中进行请求：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nv"&gt;login_resp&lt;/span&gt;.&lt;span class="nv"&gt;json&lt;/span&gt;&lt;span class="ss"&gt;()&lt;/span&gt;[&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="s"&gt;retcode&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;] &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;20000000&lt;/span&gt;:
-    &lt;span class="nv"&gt;profile_resp&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;s&lt;/span&gt;.&lt;span class="nv"&gt;get&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;PROFILE_URL&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;
-    &lt;span class="nv"&gt;print&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;f&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="s"&gt;登录成功，微博昵称为{profile_resp.json()[&amp;quot;data&amp;quot;][&amp;quot;user&amp;quot;][&amp;quot;screen_name&amp;quot;]}&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;
-&lt;span class="k"&gt;else&lt;/span&gt;:
-    &lt;span class="nv"&gt;print&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;f&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="s"&gt;登陆失败，{login_resp.json()[&amp;quot;msg&amp;quot;]}&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;if login_resp.json()[&amp;#39;retcode&amp;#39;] == 20000000:
+    profile_resp = s.get(PROFILE_URL)
+    print(f&amp;#39;登录成功，微博昵称为{profile_resp.json()[&amp;quot;data&amp;quot;][&amp;quot;user&amp;quot;][&amp;quot;screen_name&amp;quot;]}&amp;#39;)
+else:
+    print(f&amp;#39;登陆失败，{login_resp.json()[&amp;quot;msg&amp;quot;]}&amp;#39;)
 &lt;/pre&gt;&lt;/div&gt;
 
 
