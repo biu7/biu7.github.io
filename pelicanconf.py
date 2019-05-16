@@ -43,7 +43,7 @@ AUTHORS_BIO = {
     "image": "https://arulrajnet.github.io/attila-demo/assets/images/avatar.png",
     "website": "https://www.biubiu7.cn",
     "location": "ShangHai/China",
-    "bio": "爬虫 / Android/ 逆向工程师，数据科学萌新，主要语言 Python、Java、Golang"
+    "bio": "爬虫 / Android / 逆向工程师，数据科学萌新，主 Python、Java、Golang"
   }
 }
 
@@ -76,5 +76,4 @@ ARTICLE_SAVE_AS = '{date:%Y}/{date:%m}/{date:%d}/{slug}/index.html'
 # 文章评论，使用 valine
 VALINE_APPID = '2WOykmLJ16hcACygaOrAxKJQ-gzGzoHsz'
 VALINE_APPKEY = 'roiSV2zvTdHgyKldWSCstCu2'
-# VALINE_VERIFY = 'true'  # 是否启用验证码
 # VALINE_PLACE_HOLDER = 'lallala'  # 输入框提示输入文字
