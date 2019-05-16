@@ -25,6 +25,13 @@ TRANSLATION_FEED_ATOM = None
 AUTHOR_FEED_ATOM = None
 AUTHOR_FEED_RSS = None
 
+MENUITEMS = [
+    ('逆向', '/category/ni-xiang.html'),
+    ('爬虫', '/category/pa-chong.html'),
+    ('数据科学', ''),
+
+]
+
 # Blogroll
 LINKS = (('Pelican', 'http://getpelican.com/'),
          ('Python.org', 'http://python.org/'),
