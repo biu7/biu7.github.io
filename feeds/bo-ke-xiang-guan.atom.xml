@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>biubiu7 - 博客相关</title><link href="/" rel="alternate"></link><link href="/feeds/bo-ke-xiang-guan.atom.xml" rel="self"></link><id>/</id><updated>2019-05-16T13:25:00+08:00</updated><entry><title>使用 github webhook 和腾讯云云函数实现博客 cdn 自动刷新</title><link href="/2019/05/16/cdn_refresh_webhook/" rel="alternate"></link><published>2019-05-16T13:25:00+08:00</published><updated>2019-05-16T13:25:00+08:00</updated><author><name>qi</name></author><id>tag:None,2019-05-16:/2019/05/16/cdn_refresh_webhook/</id><summary type="html">&lt;p&gt;使用 github 的 webhook 和腾讯云无服务器云函数实现博客更新后自动刷新 CDN 缓存&lt;/p&gt;</summary><content type="html">&lt;p&gt;把博客迁移为静态博客之后，每次更新了文章或者配置，都要登录腾讯云控制台去手动刷新一下 cdn 缓存，次数多了实在受不了，想起来 github 是支持 webhook 的，而腾讯云也有 api 接口可以调用，很棒棒嘛。&lt;/p&gt;
+&lt;p&gt;找到腾讯云的 &lt;a href="https://cloud.tencent.com/document/product/228/3947"&gt;cdn 文档&lt;/a&gt;中刷新目录的部分，可以看到需要以下参数：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;参数&lt;/th&gt;
+&lt;th&gt;含义&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Action&lt;/td&gt;
+&lt;td&gt;具体操作的指令接口名称， 刷新 cdn 目录为 RefreshCdnDir&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;SecretId&lt;/td&gt;
+&lt;td&gt;用户的云 API SecretId&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Timestamp&lt;/td&gt;
+&lt;td&gt;时间戳&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Nonce&lt;/td&gt;
+&lt;td&gt;随机正整数&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Signature&lt;/td&gt;
+&lt;td&gt;签名&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;dirs.0&lt;/td&gt;
+&lt;td&gt;要刷新的目录&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;以上参数中，&lt;strong&gt;签名&lt;/strong&gt;需要计算得出，计算方法点&lt;a href="https://cloud.tencent.com/document/api/228/1725"&gt;这里&lt;/a&gt;，简单来说，就是将以上除&lt;strong&gt;签名&lt;/strong&gt;之外的几个参数拼接为字符串，然后以用户的 SecretKey 作为 key ，使用 hmac sha1 算法对拼接好的字符串进行签名，并做 base64 编码。&lt;/p&gt;
+&lt;p&gt;拼接字符串的格式如下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;srcStr = f&amp;quot;POST{url}?Action={Action}&amp;amp;Nonce={Nonce}&amp;amp;SecretId={SecretId}&amp;amp;Timestamp={Timestamp}&amp;amp;dirs.0={dirs_0}&amp;quot;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;：以上字符串务必保证正确顺序，不能颠倒。github 的 webhook 仅支持 POST 请求。&lt;/p&gt;
+&lt;p&gt;hmac-sha1 签名代码如下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;hmac&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;hashlib&lt;/span&gt;
+&lt;span class="n"&gt;sig&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;base64&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;b64encode&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;hmac&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;new&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;SecretKey&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;encode&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt; &lt;span class="n"&gt;srcStr&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;encode&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt; &lt;span class="n"&gt;hashlib&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sha1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;digest&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;decode&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;ok，代码有了，我们打开&lt;a href="https://console.cloud.tencent.com/scf/list?rid=4&amp;amp;ns=default"&gt;腾讯云无服务器云函数&lt;/a&gt;的页面，选择新建，选择模板函数，填入函数名称，选择&lt;strong&gt; Python3.6 的API 网关返回 Web 页面&lt;/strong&gt;模板：
+&lt;img alt="图片1" src="https://img-1251994035.cos.ap-shanghai.myqcloud.com/blog/201905160001.png"&gt;&lt;/p&gt;
+&lt;p&gt;然后选择下一步，完成。
+进入刚刚创建好的云函数中，选择函数代码选项，开始填入代码，完整代码如下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;time&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;random&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;requests&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;hashlib&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;hmac&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;base64&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;main_handler&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;event&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;context&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+   &lt;span class="n"&gt;url&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;cdn.api.qcloud.com/v2/index.php&amp;quot;&lt;/span&gt;
+    &lt;span class="n"&gt;Action&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;RefreshCdnDir&amp;quot;&lt;/span&gt;
+  &lt;span class="n"&gt;SecretId&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;填入你的 SecretId &amp;quot;&lt;/span&gt;
+  &lt;span class="n"&gt;SecretKey&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;填入你的 SecretKey &amp;quot;&lt;/span&gt;
+  &lt;span class="n"&gt;Timestamp&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;
+  &lt;span class="n"&gt;Nonce&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;random&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;randint&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10000000000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+   &lt;span class="n"&gt;dirs_0&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;填入要刷新的地址&amp;quot;&lt;/span&gt;
+  &lt;span class="n"&gt;srcStr&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;POST{url}?Action={Action}&amp;amp;Nonce={Nonce}&amp;amp;SecretId={SecretId}&amp;amp;Timestamp={Timestamp}&amp;amp;dirs.0={dirs_0}&amp;quot;&lt;/span&gt;
+ &lt;span class="n"&gt;Signature&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;base64&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;b64encode&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;hmac&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;new&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;SecretKey&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;encode&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt; &lt;span class="n"&gt;srcStr&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;encode&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt; &lt;span class="n"&gt;hashlib&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sha1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;digest&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;decode&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="n"&gt;resp&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;requests&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;post&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="n"&gt;url&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;https://{url}&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+       &lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+          &lt;span class="s2"&gt;&amp;quot;Action&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Action&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+           &lt;span class="s2"&gt;&amp;quot;SecretId&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;SecretId&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="s2"&gt;&amp;quot;Timestamp&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Timestamp&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="s2"&gt;&amp;quot;Nonce&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Nonce&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+           &lt;span class="s2"&gt;&amp;quot;Signature&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Signature&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+           &lt;span class="s2"&gt;&amp;quot;dirs.0&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;dirs_0&lt;/span&gt;
+        &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="p"&gt;)&lt;/span&gt;
+   &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+     &lt;span class="s2"&gt;&amp;quot;isBase64Encoded&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="bp"&gt;False&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+     &lt;span class="s2"&gt;&amp;quot;statusCode&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;200&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s2"&gt;&amp;quot;headers&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;Content-Type&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;text/html; charset=utf-8&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;},&lt;/span&gt;
+       &lt;span class="s2"&gt;&amp;quot;body&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;resp&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;json&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+  &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;选择&lt;strong&gt;保存并测试&lt;/strong&gt;，如果出现下图结果，表示提交 CDN 刷新任务成功：
+&lt;img alt="图片1" src="https://img.biubiu7.cn/blog/201905160002.png"&gt;
+在返回结果中， statusCode 为云函数本身调用成功返回的结果，即上方代码 return 的结果。而 body 中的则是我们调用 CDN 刷新接口返回的结果。如果调用不成功，可以根据返回的 code 值和 codeDesc 来排查错误原因。&lt;/p&gt;
+&lt;p&gt;调用成功之后，选择右上角的发布新版本来发布你的代码。发布之后选择触发方式 -&amp;gt; 添加触发方式，选择 &lt;strong&gt; API网关触发器&lt;/strong&gt;，并新建一个 API 服务，请求方法选择 POST ，环境选择发布，然后保存，如下图：
+&lt;img alt="图片2" src="https://img.biubiu7.cn/blog/201905160003.png"&gt;&lt;/p&gt;
+&lt;p&gt;之后你会得到一个访问链接，使用 POST 方式访问这个链接就会触发云函数运行，继而向 CDN 刷新 API 发送请求：
+&lt;img alt="图片3" src="https://img.biubiu7.cn/blog/201905160004.png"&gt;&lt;/p&gt;
+&lt;p&gt;接下来去 github 中需要设置 webhook 的仓库，进入 Settings -&amp;gt; Webhooks -&amp;gt; Add webhook ，然后在 Payload URL
+ 中填入上一步获取到的 url ，其余选项根据需求选择即可，我是全部默认：
+&lt;img alt="图片4" src="https://img.biubiu7.cn/blog/201905160005.png"&gt;&lt;/p&gt;
+&lt;p&gt;接下来保存即可，可以尝试 push 一次，然后前往云函数和 CDN 控制台查看日志，确定是否调用成功。&lt;/p&gt;</content></entry></feed>

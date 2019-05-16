@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+
+  <title>使用 github webhook 和腾讯云云函数实现博客 cdn 自动刷新</title>
+
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="origin" />
+  <meta name="generator" content="Pelican" />
+  <link href="/" rel="canonical" />
+
+  <!-- Feed -->
+        <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="biubiu7 Full Atom Feed" />
+          <link href="/feeds/{slug}.atom.xml" type="application/atom+xml" rel="alternate" title="biubiu7 Categories Atom Feed" />
+
+  <link href="/theme/css/style.css" type="text/css" rel="stylesheet" />
+
+  <!-- Code highlight color scheme -->
+      <link href="/theme/css/code_blocks/github.css" rel="stylesheet">
+
+
+  <!-- Custom fonts -->
+  <link href='https://fonts.loli.net/css?family=Montserrat:400,300' rel='stylesheet' type='text/css' />
+  <link href="https://fonts.loli.net/css?family=Lato" rel="stylesheet" type="text/css" />
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+
+  <link href="/2019/05/16/cdn_refresh_webhook/" rel="canonical" />
+
+    <meta name="description" content="使用 github 的 webhook 和腾讯云无服务器云函数实现博客更新后自动刷新 CDN 缓存">
+
+    <meta name="author" content="qi">
+
+
+
+
+
+<!-- Open Graph -->
+<meta property="og:site_name" content="biubiu7"/>
+<meta property="og:title" content="使用 github webhook 和腾讯云云函数实现博客 cdn 自动刷新"/>
+<meta property="og:description" content="使用 github 的 webhook 和腾讯云无服务器云函数实现博客更新后自动刷新 CDN 缓存"/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:url" content="/2019/05/16/cdn_refresh_webhook/"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2019-05-16 13:25:00+08:00"/>
+<meta property="article:modified_time" content=""/>
+<meta property="article:author" content="/author/qi.html">
+<meta property="article:section" content="博客相关"/>
+<meta property="og:image" content="/theme/images/post-bg.jpg">
+
+<!-- Twitter Card -->
+
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Article",
+  "name": "使用 github webhook 和腾讯云云函数实现博客 cdn 自动刷新",
+  "headline": "使用 github webhook 和腾讯云云函数实现博客 cdn 自动刷新",
+  "datePublished": "2019-05-16 13:25:00+08:00",
+  "dateModified": "",
+  "author": {
+    "@type": "Person",
+    "name": "qi",
+    "url": "/author/qi.html"
+  },
+  "image": "/theme/images/post-bg.jpg",
+  "url": "/2019/05/16/cdn_refresh_webhook/",
+  "description": "使用 github 的 webhook 和腾讯云无服务器云函数实现博客更新后自动刷新 CDN 缓存"
+}
+</script>
+</head>
+<!-- TODO : Body class -->
+<body class="home-template">
+
+<nav id="menu">
+  <a class="close-button">Close</a>
+  <div class="nav-wrapper">
+    <p class="nav-label">Menu</p>
+    <ul>
+          <li><a href="/category/ni-xiang.html" role="presentation">逆向</a></li>
+          <li><a href="/category/pa-chong.html" role="presentation">爬虫</a></li>
+          <li><a href="" role="presentation">数据科学</a></li>
+
+
+    </ul>
+  </div>
+</nav>
+    <!-- Progressbar -->
+    <div class="progress-container">
+        <span class="progress-bar"></span>
+    </div>
+
+    <!-- Page Header -->
+    <!-- Set your background image for this header on the line below. -->
+    <header id="blog-header" class="has-cover">
+      <div class="inner">
+        <nav id="navigation">
+            <span id="home-button" class="nav-button">
+                <a class="home-button" href="/" title="Home"><i class="ic ic-arrow-left"></i> Home</a>
+            </span>
+          <span id="menu-button" class="nav-button">
+            <a class="menu-button"><i class="ic ic-menu"></i> Menu</a>
+          </span>
+        </nav>
+        <h1 class="post-title">使用 github webhook 和腾讯云云函数实现博客 cdn 自动刷新</h1>
+        <!-- TODO : Proper class for headline -->
+        <span class="post-meta">
+                <a href="/author/qi.html">七</a>
+            | <time datetime="2019-05-16 13:25:00">2019-05-16 13:25:00</time>
+        </span>
+        <!-- TODO : Modified check -->
+            <div class="post-cover cover" style="background-color: black">
+      </div>
+    </header>
+
+  <section id="wrapper">
+    <a class="hidden-close"></a>
+
+    <!-- Post content -->
+    <main class="content" role="main">
+        <article class="post">
+        <div class="inner">
+            <section class="post-content">
+                <p>把博客迁移为静态博客之后，每次更新了文章或者配置，都要登录腾讯云控制台去手动刷新一下 cdn 缓存，次数多了实在受不了，想起来 github 是支持 webhook 的，而腾讯云也有 api 接口可以调用，很棒棒嘛。</p>
+<p>找到腾讯云的 <a href="https://cloud.tencent.com/document/product/228/3947">cdn 文档</a>中刷新目录的部分，可以看到需要以下参数：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Action</td>
+<td>具体操作的指令接口名称， 刷新 cdn 目录为 RefreshCdnDir</td>
+</tr>
+<tr>
+<td>SecretId</td>
+<td>用户的云 API SecretId</td>
+</tr>
+<tr>
+<td>Timestamp</td>
+<td>时间戳</td>
+</tr>
+<tr>
+<td>Nonce</td>
+<td>随机正整数</td>
+</tr>
+<tr>
+<td>Signature</td>
+<td>签名</td>
+</tr>
+<tr>
+<td>dirs.0</td>
+<td>要刷新的目录</td>
+</tr>
+</tbody>
+</table>
+<p>以上参数中，<strong>签名</strong>需要计算得出，计算方法点<a href="https://cloud.tencent.com/document/api/228/1725">这里</a>，简单来说，就是将以上除<strong>签名</strong>之外的几个参数拼接为字符串，然后以用户的 SecretKey 作为 key ，使用 hmac sha1 算法对拼接好的字符串进行签名，并做 base64 编码。</p>
+<p>拼接字符串的格式如下：</p>
+<div class="highlight"><pre><span></span>srcStr = f&quot;POST{url}?Action={Action}&amp;Nonce={Nonce}&amp;SecretId={SecretId}&amp;Timestamp={Timestamp}&amp;dirs.0={dirs_0}&quot;
+</pre></div>
+
+
+<p><strong>注意</strong>：以上字符串务必保证正确顺序，不能颠倒。github 的 webhook 仅支持 POST 请求。</p>
+<p>hmac-sha1 签名代码如下：</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">hmac</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="n">sig</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">hmac</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">SecretKey</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span> <span class="n">srcStr</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha1</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">())</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+</pre></div>
+
+
+<p>ok，代码有了，我们打开<a href="https://console.cloud.tencent.com/scf/list?rid=4&amp;ns=default">腾讯云无服务器云函数</a>的页面，选择新建，选择模板函数，填入函数名称，选择<strong> Python3.6 的API 网关返回 Web 页面</strong>模板：
+<img alt="图片1" src="https://img-1251994035.cos.ap-shanghai.myqcloud.com/blog/201905160001.png"></p>
+<p>然后选择下一步，完成。
+进入刚刚创建好的云函数中，选择函数代码选项，开始填入代码，完整代码如下：</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">import</span> <span class="nn">hmac</span>
+<span class="kn">import</span> <span class="nn">base64</span>
+
+<span class="k">def</span> <span class="nf">main_handler</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+   <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;cdn.api.qcloud.com/v2/index.php&quot;</span>
+    <span class="n">Action</span> <span class="o">=</span> <span class="s2">&quot;RefreshCdnDir&quot;</span>
+  <span class="n">SecretId</span> <span class="o">=</span> <span class="s2">&quot;填入你的 SecretId &quot;</span>
+  <span class="n">SecretKey</span> <span class="o">=</span> <span class="s2">&quot;填入你的 SecretKey &quot;</span>
+  <span class="n">Timestamp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+  <span class="n">Nonce</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10000000000</span><span class="p">)</span>
+   <span class="n">dirs_0</span> <span class="o">=</span> <span class="s2">&quot;填入要刷新的地址&quot;</span>
+  <span class="n">srcStr</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;POST{url}?Action={Action}&amp;Nonce={Nonce}&amp;SecretId={SecretId}&amp;Timestamp={Timestamp}&amp;dirs.0={dirs_0}&quot;</span>
+ <span class="n">Signature</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">hmac</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">SecretKey</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span> <span class="n">srcStr</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha1</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">())</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="n">f</span><span class="s2">&quot;https://{url}&quot;</span><span class="p">,</span>
+       <span class="n">data</span><span class="o">=</span><span class="p">{</span>
+          <span class="s2">&quot;Action&quot;</span><span class="p">:</span> <span class="n">Action</span><span class="p">,</span>
+           <span class="s2">&quot;SecretId&quot;</span><span class="p">:</span> <span class="n">SecretId</span><span class="p">,</span>
+            <span class="s2">&quot;Timestamp&quot;</span><span class="p">:</span> <span class="n">Timestamp</span><span class="p">,</span>
+            <span class="s2">&quot;Nonce&quot;</span><span class="p">:</span> <span class="n">Nonce</span><span class="p">,</span>
+           <span class="s2">&quot;Signature&quot;</span><span class="p">:</span> <span class="n">Signature</span><span class="p">,</span>
+           <span class="s2">&quot;dirs.0&quot;</span><span class="p">:</span> <span class="n">dirs_0</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+   <span class="k">return</span> <span class="p">{</span>
+     <span class="s2">&quot;isBase64Encoded&quot;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+     <span class="s2">&quot;statusCode&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="s2">&quot;headers&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">:</span> <span class="s1">&#39;text/html; charset=utf-8&#39;</span><span class="p">},</span>
+       <span class="s2">&quot;body&quot;</span><span class="p">:</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+  <span class="p">}</span>
+</pre></div>
+
+
+<p>选择<strong>保存并测试</strong>，如果出现下图结果，表示提交 CDN 刷新任务成功：
+<img alt="图片1" src="https://img.biubiu7.cn/blog/201905160002.png">
+在返回结果中， statusCode 为云函数本身调用成功返回的结果，即上方代码 return 的结果。而 body 中的则是我们调用 CDN 刷新接口返回的结果。如果调用不成功，可以根据返回的 code 值和 codeDesc 来排查错误原因。</p>
+<p>调用成功之后，选择右上角的发布新版本来发布你的代码。发布之后选择触发方式 -&gt; 添加触发方式，选择 <strong> API网关触发器</strong>，并新建一个 API 服务，请求方法选择 POST ，环境选择发布，然后保存，如下图：
+<img alt="图片2" src="https://img.biubiu7.cn/blog/201905160003.png"></p>
+<p>之后你会得到一个访问链接，使用 POST 方式访问这个链接就会触发云函数运行，继而向 CDN 刷新 API 发送请求：
+<img alt="图片3" src="https://img.biubiu7.cn/blog/201905160004.png"></p>
+<p>接下来去 github 中需要设置 webhook 的仓库，进入 Settings -&gt; Webhooks -&gt; Add webhook ，然后在 Payload URL
+ 中填入上一步获取到的 url ，其余选项根据需求选择即可，我是全部默认：
+<img alt="图片4" src="https://img.biubiu7.cn/blog/201905160005.png"></p>
+<p>接下来保存即可，可以尝试 push 一次，然后前往云函数和 CDN 控制台查看日志，确定是否调用成功。</p>
+            </section>
+
+            <section class="post-info">
+                <div class="post-share">
+                    <a class="twitter" href="https://twitter.com/share?text=使用 github webhook 和腾讯云云函数实现博客 cdn 自动刷新&amp;url=/2019/05/16/cdn_refresh_webhook/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <i class="ic ic-twitter"></i><span class="hidden">Twitter</span>
+                    </a>
+                    <a class="facebook" href="https://www.facebook.com/sharer/sharer.php?u=/2019/05/16/cdn_refresh_webhook/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <i class="ic ic-facebook"></i><span class="hidden">Facebook</span>
+                    </a>
+                    <a class="googleplus" href="https://plus.google.com/share?url=/2019/05/16/cdn_refresh_webhook/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <i class="ic ic-googleplus"></i><span class="hidden">Google+</span>
+                    </a>
+                    <div class="clear"></div>
+                </div>
+
+
+                <div class="clear"></div>
+
+                <aside class="post-author">
+
+
+                        <figure class="post-author-avatar">
+                            <img src="https://arulrajnet.github.io/attila-demo/assets/images/avatar.png" alt="七" />
+                        </figure>
+                    <div class="post-author-bio">
+                        <h4 class="post-author-name"><a href="/author/qi.html">七</a></h4>
+                            <p class="post-author-about">爬虫 / Android / 逆向工程师，数据科学萌新，主 Python、Java、Golang</p>
+                            <span class="post-author-location"><i class="ic ic-location"></i> ShangHai/China</span>
+                            <span class="post-author-website"><a href="https://www.biubiu7.cn"><i class="ic ic-link"></i> Website</a></span>
+                        <!-- Social linkes in alphabet order. -->
+                    </div>
+                    <div class="clear"></div>
+                </aside>
+
+                </section>
+
+
+
+                    <!-- valine 评论 start  -->
+
+                <!-- Link valine 的支持文件  -->
+                <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+                <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+                <div id="vcomments"></div>
+                <script type="text/javascript">
+                    new Valine({
+                        el: '#vcomments',
+                        appId: '2WOykmLJ16hcACygaOrAxKJQ-gzGzoHsz',
+                        appKey: 'roiSV2zvTdHgyKldWSCstCu2',
+                        verify: false,
+                        placeholder: 'Just go go',
+                    })
+                </script>
+                <!-- valine end -->
+
+
+                <aside class="post-nav">
+                    <div class="clear"></div>
+                </aside>
+
+            </div>
+
+        </article>
+    </main>
+      <!-- TODO : Body class -->
+    <div id="body-class" style="display: none;" class=""></div>
+
+    <footer id="footer">
+      <div class="inner">
+        <section class="credits">
+
+
+
+          <span>Theme <a href="https://github.com/arulrajnet/attila" rel="nofollow">Attila</a></span>
+          <span>Published with <a href="https://github.com/getpelican/pelican" rel="nofollow">Pelican</a></span>
+          <span><a href="http://www.miit.gov.cn" rel="nofollow">豫ICP备18037159号</a></span>
+        </section>
+      </div>
+    </footer>
+  </section>
+
+  <script type="text/javascript" src="/theme/js/script.js"></script>
+
+</body>
+</html>
