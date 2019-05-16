@@ -120,10 +120,10 @@
         <!-- TODO : Proper class for headline -->
         <span class="post-meta">
                 <a href="/author/qi.html">七</a>
-            | <time datetime="Sun 26 November 2017">Sun 26 November 2017</time>
+            | <time datetime="日 26 十一月 2017">日 26 十一月 2017</time>
         </span>
         <!-- TODO : Modified check -->
-            <span class="post-meta"> | Updated on Mon 27 November 2017</span>
+            <span class="post-meta"> | Updated on 一 27 十一月 2017</span>
             <div class="post-cover cover" style="background-color: black">
       </div>
     </header>
@@ -185,11 +185,11 @@
 <p>运行一下，看到输出：
 <img alt="图片3" src="https://img.biubiu7.cn/sinaweibo/sina_wap_login_3.png"></p>
 <p>看到没有输出错误信息，表示我们已经登录成功了。然后我们尝试获取一下登录后的个人信息，来确定我们登录成功。从抓包工具中拿到链接后放进代码中进行请求：</p>
-<div class="highlight"><pre><span></span>if login_resp.json()[&#39;retcode&#39;] == 20000000:
-    profile_resp = s.get(PROFILE_URL)
-    print(f&#39;登录成功，微博昵称为{profile_resp.json()[&quot;data&quot;][&quot;user&quot;][&quot;screen_name&quot;]}&#39;)
-else:
-    print(f&#39;登陆失败，{login_resp.json()[&quot;msg&quot;]}&#39;)
+<div class="highlight"><pre><span></span><span class="k">if</span> <span class="nv">login_resp</span>.<span class="nv">json</span><span class="ss">()</span>[<span class="s1">&#39;</span><span class="s">retcode</span><span class="s1">&#39;</span>] <span class="o">==</span> <span class="mi">20000000</span>:
+    <span class="nv">profile_resp</span> <span class="o">=</span> <span class="nv">s</span>.<span class="nv">get</span><span class="ss">(</span><span class="nv">PROFILE_URL</span><span class="ss">)</span>
+    <span class="nv">print</span><span class="ss">(</span><span class="nv">f</span><span class="s1">&#39;</span><span class="s">登录成功，微博昵称为{profile_resp.json()[&quot;data&quot;][&quot;user&quot;][&quot;screen_name&quot;]}</span><span class="s1">&#39;</span><span class="ss">)</span>
+<span class="k">else</span>:
+    <span class="nv">print</span><span class="ss">(</span><span class="nv">f</span><span class="s1">&#39;</span><span class="s">登陆失败，{login_resp.json()[&quot;msg&quot;]}</span><span class="s1">&#39;</span><span class="ss">)</span>
 </pre></div>
 
 
@@ -240,18 +240,21 @@ else:
                     <!-- valine 评论 start  -->
 
                 <!-- Link valine 的支持文件  -->
-                <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
-                <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
-                <div id="vcomments"></div>
-                <script type="text/javascript">
-                    new Valine({
-                        el: '#vcomments',
-                        appId: '2WOykmLJ16hcACygaOrAxKJQ-gzGzoHsz',
-                        appKey: 'roiSV2zvTdHgyKldWSCstCu2',
-                        verify: false,
-                        placeholder: 'Just go go',
-                    })
-                </script>
+                    <script src="https://cdnjs.loli.net/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+                    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+                    <script type="text/javascript" src="/theme/js/Valine.min.js"></script>
+                    <div id="vcomments" class="comment"></div>
+                    <script type="text/javascript">
+                        new Valine({
+                            av: AV,
+                            el: '.comment',
+                            emoticon_url: 'https://cloud.panjunwen.com/alu',
+                            emoticon_list: ["吐.png","喷血.png","狂汗.png","不说话.png","汗.png","坐等.png","献花.png","不高兴.png","中刀.png","害羞.png","皱眉.png","小眼睛.png","中指.png","尴尬.png","瞅你.png","想一想.png","中枪.png","得意.png","肿包.png","扇耳光.png","亲亲.png","惊喜.png","脸红.png","无所谓.png","便便.png","愤怒.png","蜡烛.png","献黄瓜.png","内伤.png","投降.png","观察.png","看不见.png","击掌.png","抠鼻.png","邪恶.png","看热闹.png","口水.png","抽烟.png","锁眉.png","装大款.png","吐舌.png","无奈.png","长草.png","赞一个.png","呲牙.png","无语.png","阴暗.png","不出所料.png","咽气.png","期待.png","高兴.png","吐血倒地.png","哭泣.png","欢呼.png","黑线.png","喜极而泣.png","喷水.png","深思.png","鼓掌.png","暗地观察.png"],
+                            appId: '2WOykmLJ16hcACygaOrAxKJQ-gzGzoHsz',
+                            appKey: 'roiSV2zvTdHgyKldWSCstCu2',
+                            placeholder: 'Just go go',
+                        })
+                    </script>
                 <!-- valine end -->
 
 
