@@ -50,7 +50,7 @@
 
 
 &lt;p&gt;ok，代码有了，我们打开&lt;a href="https://console.cloud.tencent.com/scf/list?rid=4&amp;amp;ns=default"&gt;腾讯云无服务器云函数&lt;/a&gt;的页面，选择新建，选择模板函数，填入函数名称，选择&lt;strong&gt; Python3.6 的API 网关返回 Web 页面&lt;/strong&gt;模板：
-&lt;img alt="图片1" src="https://img-1251994035.cos.ap-shanghai.myqcloud.com/blog/201905160001.png"&gt;&lt;/p&gt;
+&lt;img alt="图片1" src="https://img.biubiu7.cn/blog/201905160001.png"&gt;&lt;/p&gt;
 &lt;p&gt;然后选择下一步，完成。
 进入刚刚创建好的云函数中，选择函数代码选项，开始填入代码，完整代码如下：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;time&lt;/span&gt;
