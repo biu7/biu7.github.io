@@ -62,12 +62,13 @@ DEFAULT_PAGINATION = 10
 # Uncomment following line if you want document-relative URLs when developing
 #RELATIVE_URLS = True
 
-
+ARTICLE_EXCLUDES = ['assets']
 STATIC_PATHS = ['assets']
 
 EXTRA_PATH_METADATA = {
     'assets/favicon.ico': {'path': 'favicon.ico'},
-    'assets/CNAME': {'path': 'CNAME'}
+    'assets/CNAME': {'path': 'CNAME'},
+    'assets/README.md': {'path': 'README.md'}
 }
 
 DEFAULT_DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
