@@ -98,9 +98,9 @@ ok，代码有了，我们打开[腾讯云无服务器云函数](https://console
     payload = json.loads(unquote(event["body"])[8:])
     if payload["ref"] != "refs/heads/master":
         return {
-        "isBase64Encoded": False,
-        "statusCode": 200,
-        "headers": {'Content-Type': 'text/html; charset=utf-8'},
-        "body": "本次推送分支不是 master 分支，不作 CDN 刷新操作"
-    }
+            "isBase64Encoded": False,
+            "statusCode": 200,
+            "headers": {'Content-Type': 'text/html; charset=utf-8'},
+            "body": "本次推送分支不是 master 分支，不作 CDN 刷新操作"
+        }
 
