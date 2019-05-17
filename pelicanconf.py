@@ -29,6 +29,8 @@ MENUITEMS = [
     ('逆向', '/category/ni-xiang.html'),
     ('爬虫', '/category/pa-chong.html'),
     ('数据科学', ''),
+    ('博客相关', '/category/bo-ke-xiang-guan.html'),
+    ('杂项', ''),
 
 ]
 
