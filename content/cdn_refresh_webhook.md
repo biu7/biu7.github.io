@@ -33,7 +33,7 @@ hmac-sha1 签名代码如下：
     sig = base64.b64encode(hmac.new(SecretKey.encode(), srcStr.encode(), hashlib.sha1).digest()).decode()
 
 ok，代码有了，我们打开[腾讯云无服务器云函数](https://console.cloud.tencent.com/scf/list?rid=4&ns=default)的页面，选择新建，选择模板函数，填入函数名称，选择** Python3.6 的API 网关返回 Web 页面**模板：
-![图片1](https://img-1251994035.cos.ap-shanghai.myqcloud.com/blog/201905160001.png)
+![图片1](https://img.biubiu7.cn/blog/201905160001.png)
 
 然后选择下一步，完成。
 进入刚刚创建好的云函数中，选择函数代码选项，开始填入代码，完整代码如下：
