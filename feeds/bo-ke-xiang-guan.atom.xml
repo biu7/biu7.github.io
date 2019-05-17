@@ -37,7 +37,7 @@
 &lt;/table&gt;
 &lt;p&gt;以上参数中，&lt;strong&gt;签名&lt;/strong&gt;需要计算得出，计算方法点&lt;a href="https://cloud.tencent.com/document/api/228/1725"&gt;这里&lt;/a&gt;，简单来说，就是将以上除&lt;strong&gt;签名&lt;/strong&gt;之外的几个参数拼接为字符串，然后以用户的 SecretKey 作为 key ，使用 hmac sha1 算法对拼接好的字符串进行签名，并做 base64 编码。&lt;/p&gt;
 &lt;p&gt;拼接字符串的格式如下：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;srcStr = f&amp;quot;POST{url}?Action={Action}&amp;amp;Nonce={Nonce}&amp;amp;SecretId={SecretId}&amp;amp;Timestamp={Timestamp}&amp;amp;dirs.0={dirs_0}&amp;quot;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;srcStr&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="ss"&gt;&amp;quot;POST{url}?Action={Action}&amp;amp;Nonce={Nonce}&amp;amp;SecretId={SecretId}&amp;amp;Timestamp={Timestamp}&amp;amp;dirs.0={dirs_0}&amp;quot;&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 

@@ -37,7 +37,7 @@
 &lt;/table&gt;
 &lt;p&gt;以上参数中，&lt;strong&gt;签名&lt;/strong&gt;需要计算得出，计算方法点&lt;a href="https://cloud.tencent.com/document/api/228/1725"&gt;这里&lt;/a&gt;，简单来说，就是将以上除&lt;strong&gt;签名&lt;/strong&gt;之外的几个参数拼接为字符串，然后以用户的 SecretKey 作为 key ，使用 hmac sha1 算法对拼接好的字符串进行签名，并做 base64 编码。&lt;/p&gt;
 &lt;p&gt;拼接字符串的格式如下：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;srcStr = f&amp;quot;POST{url}?Action={Action}&amp;amp;Nonce={Nonce}&amp;amp;SecretId={SecretId}&amp;amp;Timestamp={Timestamp}&amp;amp;dirs.0={dirs_0}&amp;quot;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;srcStr&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="ss"&gt;&amp;quot;POST{url}?Action={Action}&amp;amp;Nonce={Nonce}&amp;amp;SecretId={SecretId}&amp;amp;Timestamp={Timestamp}&amp;amp;dirs.0={dirs_0}&amp;quot;&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -165,11 +165,11 @@
 &lt;p&gt;运行一下，看到输出：
 &lt;img alt="图片3" src="https://img.biubiu7.cn/sinaweibo/sina_wap_login_3.png"&gt;&lt;/p&gt;
 &lt;p&gt;看到没有输出错误信息，表示我们已经登录成功了。然后我们尝试获取一下登录后的个人信息，来确定我们登录成功。从抓包工具中拿到链接后放进代码中进行请求：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;if login_resp.json()[&amp;#39;retcode&amp;#39;] == 20000000:
-    profile_resp = s.get(PROFILE_URL)
-    print(f&amp;#39;登录成功，微博昵称为{profile_resp.json()[&amp;quot;data&amp;quot;][&amp;quot;user&amp;quot;][&amp;quot;screen_name&amp;quot;]}&amp;#39;)
-else:
-    print(f&amp;#39;登陆失败，{login_resp.json()[&amp;quot;msg&amp;quot;]}&amp;#39;)
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nv"&gt;login_resp&lt;/span&gt;.&lt;span class="nv"&gt;json&lt;/span&gt;&lt;span class="ss"&gt;()&lt;/span&gt;[&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="s"&gt;retcode&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;] &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;20000000&lt;/span&gt;:
+    &lt;span class="nv"&gt;profile_resp&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;s&lt;/span&gt;.&lt;span class="nv"&gt;get&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;PROFILE_URL&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;
+    &lt;span class="nv"&gt;print&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;f&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="s"&gt;登录成功，微博昵称为{profile_resp.json()[&amp;quot;data&amp;quot;][&amp;quot;user&amp;quot;][&amp;quot;screen_name&amp;quot;]}&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;else&lt;/span&gt;:
+    &lt;span class="nv"&gt;print&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;f&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="s"&gt;登陆失败，{login_resp.json()[&amp;quot;msg&amp;quot;]}&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
