@@ -243,11 +243,11 @@
 <div class="highlight"><pre><span></span><span class="nv">payload</span> <span class="o">=</span> <span class="nv">json</span>.<span class="nv">loads</span><span class="ss">(</span><span class="nv">unquote</span><span class="ss">(</span><span class="nv">event</span>[<span class="s2">&quot;</span><span class="s">body</span><span class="s2">&quot;</span>]<span class="ss">)</span>[<span class="mi">8</span>:]<span class="ss">)</span>
 <span class="k">if</span> <span class="nv">payload</span>[<span class="s2">&quot;</span><span class="s">ref</span><span class="s2">&quot;</span>] <span class="o">!=</span> <span class="s2">&quot;</span><span class="s">refs/heads/master</span><span class="s2">&quot;</span>:
     <span class="k">return</span> {
-    <span class="s2">&quot;</span><span class="s">isBase64Encoded</span><span class="s2">&quot;</span>: <span class="nv">False</span>,
-    <span class="s2">&quot;</span><span class="s">statusCode</span><span class="s2">&quot;</span>: <span class="mi">200</span>,
-    <span class="s2">&quot;</span><span class="s">headers</span><span class="s2">&quot;</span>: {<span class="s1">&#39;</span><span class="s">Content-Type</span><span class="s1">&#39;</span>: <span class="s1">&#39;</span><span class="s">text/html; charset=utf-8</span><span class="s1">&#39;</span>},
-    <span class="s2">&quot;</span><span class="s">body</span><span class="s2">&quot;</span>: <span class="s2">&quot;</span><span class="s">本次推送分支不是 master 分支，不作 CDN 刷新操作</span><span class="s2">&quot;</span>
-}
+        <span class="s2">&quot;</span><span class="s">isBase64Encoded</span><span class="s2">&quot;</span>: <span class="nv">False</span>,
+        <span class="s2">&quot;</span><span class="s">statusCode</span><span class="s2">&quot;</span>: <span class="mi">200</span>,
+        <span class="s2">&quot;</span><span class="s">headers</span><span class="s2">&quot;</span>: {<span class="s1">&#39;</span><span class="s">Content-Type</span><span class="s1">&#39;</span>: <span class="s1">&#39;</span><span class="s">text/html; charset=utf-8</span><span class="s1">&#39;</span>},
+        <span class="s2">&quot;</span><span class="s">body</span><span class="s2">&quot;</span>: <span class="s2">&quot;</span><span class="s">本次推送分支不是 master 分支，不作 CDN 刷新操作</span><span class="s2">&quot;</span>
+    }
 </pre></div>
             </section>
 
