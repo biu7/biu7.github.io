@@ -46,32 +46,32 @@ ok，代码有了，我们打开[腾讯云无服务器云函数](https://console
 	import base64
 
 	def main_handler(event, context):
- 	   url = "cdn.api.qcloud.com/v2/index.php"
+        url = "cdn.api.qcloud.com/v2/index.php"
         Action = "RefreshCdnDir"
-  	  SecretId = "填入你的 SecretId "
-  	  SecretKey = "填入你的 SecretKey "
-  	  Timestamp = int(time.time())
-  	  Nonce = random.randint(1, 10000000000)
- 	   dirs_0 = "填入要刷新的地址"
-  	  srcStr = f"POST{url}?Action={Action}&Nonce={Nonce}&SecretId={SecretId}&Timestamp={Timestamp}&dirs.0={dirs_0}"
-   	 Signature = base64.b64encode(hmac.new(SecretKey.encode(), srcStr.encode(), hashlib.sha1).digest()).decode()
-    	resp = requests.post(
-    	    url=f"https://{url}",
-     	   data={
-      	      "Action": Action,
-     	       "SecretId": SecretId,
-    	        "Timestamp": Timestamp,
-    	        "Nonce": Nonce,
-     	       "Signature": Signature,
-     	       "dirs.0": dirs_0
-    	    }
-	    )
- 	   return {
-   	     "isBase64Encoded": False,
-   	     "statusCode": 200,
-    	    "headers": {'Content-Type': 'text/html; charset=utf-8'},
-     	   "body": resp.json()
-  	  }
+        SecretId = "填入你的 SecretId "
+        SecretKey = "填入你的 SecretKey "
+        Timestamp = int(time.time())
+        Nonce = random.randint(1, 10000000000)
+        dirs_0 = "填入要刷新的地址"
+        srcStr = f"POST{url}?Action={Action}&Nonce={Nonce}&SecretId={SecretId}&Timestamp={Timestamp}&dirs.0={dirs_0}"
+        Signature = base64.b64encode(hmac.new(SecretKey.encode(), srcStr.encode(), hashlib.sha1).digest()).decode()
+        resp = requests.post(
+            url=f"https://{url}",
+            data={
+                "Action": Action,
+                "SecretId": SecretId,
+                "Timestamp": Timestamp,
+                "Nonce": Nonce,
+                "Signature": Signature,
+                "dirs.0": dirs_0
+            }
+        )
+        return {
+            "isBase64Encoded": False,
+            "statusCode": 200,
+            "headers": {'Content-Type': 'text/html; charset=utf-8'},
+            "body": resp.json()
+        }
 
 选择**保存并测试**，如果出现下图结果，表示提交 CDN 刷新任务成功：
 ![图片1](https://img.biubiu7.cn/blog/201905160002.png)
@@ -93,7 +93,7 @@ ok，代码有了，我们打开[腾讯云无服务器云函数](https://console
 
 **5月17日更新**
 
-发现不管 push 到哪个分支都会更新，而 github 上并没有找到指定分支推送触发 webhook 的方法，那就只好在代码里做一次判断了。将以下代码添加到函数开头，重新发布即可：
+发现不管 push 到哪个分支都会触发 CDN 刷新，而 github 上并没有找到指定分支推送触发 webhook 的方法，那就只好在代码里做一次判断了。将以下代码添加到函数开头，重新发布即可：
 
     payload = json.loads(unquote(event["body"])[8:])
     if payload["ref"] != "refs/heads/master":
