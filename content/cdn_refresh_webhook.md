@@ -88,3 +88,19 @@ ok，代码有了，我们打开[腾讯云无服务器云函数](https://console
 ![图片4](https://img.biubiu7.cn/blog/201905160005.png)
 
 接下来保存即可，可以尝试 push 一次，然后前往云函数和 CDN 控制台查看日志，确定是否调用成功。
+
+
+
+**5月17日更新**
+
+发现不管 push 到哪个分支都会更新，而 github 上并没有找到指定分支推送触发 webhook 的方法，那就只好在代码里做一次判断了。将以下代码添加到函数开头，重新发布即可：
+
+    payload = json.loads(unquote(event["body"])[8:])
+    if payload["ref"] != "refs/heads/master":
+        return {
+        "isBase64Encoded": False,
+        "statusCode": 200,
+        "headers": {'Content-Type': 'text/html; charset=utf-8'},
+        "body": "本次推送分支不是 master 分支，不作 CDN 刷新操作"
+    }
+
