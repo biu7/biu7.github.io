@@ -8,4 +8,4 @@
 
 迫于懒，历史数据只迁移了一篇试水
 
-访问请使用 https://www.biubiu7.cn，在国内使用 github.io 访问博客将无法解析到 CDN 地址
+访问请使用 https://www.biubiu7.cn ，在国内使用 github.io 访问博客将无法解析到 CDN 地址
