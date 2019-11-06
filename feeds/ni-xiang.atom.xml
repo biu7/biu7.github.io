@@ -15,4 +15,4 @@
 &lt;p&gt;注：部分应用会检测手机是否 root、是否安装了 Magisk 、xposed 等框架、甚至是否打开了 usb 调试，比如交通银行买单吧检测 root 退出、中国移动检测 root 和 xposed 闪退或卡启动页、微信检测 xposed 封号等，MagiskHide 能够一定程度上隐藏手机的 root 及 Magisk 安装情况。&lt;/p&gt;
 &lt;h4&gt;解决&lt;/h4&gt;
 &lt;p&gt;既然知道了原因，自然有办法解决。Magisk 自身提供了 Resetprop 方法来修改系统属性值，不过经测试似乎不能持久化修改，即重启后修改后的值会恢复，我们使用 Magisk 模块 &lt;a href="https://forum.xda-developers.com/apps/magisk/module-magiskhide-props-config-t3789228"&gt;MagiskHide Props Config&lt;/a&gt;来修改就好。&lt;/p&gt;
-&lt;p&gt;在 Magisk 自带的下载中搜索，然后安装、重启。重启后 adb shell 进入 shell，输入 props 回车，输入 4 选择 Edit MagiskHide props，然后选择修改 ro.debuggable ，之后按照提示一路 y 过去，重启后再查看 ro.debuggable ,已经 ok 了，电脑打开 DDMS 查看，也能够看到手机上的进程，完事儿。&lt;/p&gt;</content><category term="逆向"></category><category term="爬虫"></category></entry></feed>
+&lt;p&gt;在 Magisk 自带的下载中搜索，然后安装、重启。重启后 adb shell 进入 shell，输入 props 回车，输入 4 选择 Edit MagiskHide props，然后选择修改 ro.debuggable ，之后按照提示一路 y 过去，重启后再查看 ro.debuggable ,已经 ok 了，电脑打开 DDMS 查看，也能够看到手机上的进程，完事儿。&lt;/p&gt;</content><category term="逆向"></category><category term="逆向"></category><category term="爬虫"></category></entry></feed>

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+
+  <title>[读书笔记]Redis实战-列表</title>
+
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="origin" />
+  <meta name="generator" content="Pelican" />
+  <link href="/" rel="canonical" />
+
+  <!-- Feed -->
+        <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="biubiu7 Full Atom Feed" />
+          <link href="/feeds/{slug}.atom.xml" type="application/atom+xml" rel="alternate" title="biubiu7 Categories Atom Feed" />
+
+  <link href="/theme/css/style.css" type="text/css" rel="stylesheet" />
+
+  <!-- Code highlight color scheme -->
+      <link href="/theme/css/code_blocks/github.css" rel="stylesheet">
+
+
+  <!-- Custom fonts -->
+  <link href='https://fonts.loli.net/css?family=Montserrat:400,300' rel='stylesheet' type='text/css' />
+  <link href="https://fonts.loli.net/css?family=Lato" rel="stylesheet" type="text/css" />
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+
+  <link href="/2017/12/24/redis_list/" rel="canonical" />
+
+    <meta name="description" content="Redis 列表">
+
+    <meta name="author" content="qi">
+
+
+
+
+
+<!-- Open Graph -->
+<meta property="og:site_name" content="biubiu7"/>
+<meta property="og:title" content="[读书笔记]Redis实战-列表"/>
+<meta property="og:description" content="Redis 列表"/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:url" content="/2017/12/24/redis_list/"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2017-12-24 00:00:00+08:00"/>
+<meta property="article:modified_time" content=""/>
+<meta property="article:author" content="/author/qi.html">
+<meta property="article:section" content="杂项"/>
+<meta property="og:image" content="/theme/images/post-bg.jpg">
+
+<!-- Twitter Card -->
+
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Article",
+  "name": "[读书笔记]Redis实战-列表",
+  "headline": "[读书笔记]Redis实战-列表",
+  "datePublished": "2017-12-24 00:00:00+08:00",
+  "dateModified": "",
+  "author": {
+    "@type": "Person",
+    "name": "qi",
+    "url": "/author/qi.html"
+  },
+  "image": "/theme/images/post-bg.jpg",
+  "url": "/2017/12/24/redis_list/",
+  "description": "Redis 列表"
+}
+</script>
+</head>
+<!-- TODO : Body class -->
+<body class="home-template">
+
+<nav id="menu">
+  <a class="close-button">Close</a>
+  <div class="nav-wrapper">
+    <p class="nav-label">Menu</p>
+    <ul>
+          <li><a href="/category/ni-xiang.html" role="presentation">逆向</a></li>
+          <li><a href="/category/pa-chong.html" role="presentation">爬虫</a></li>
+          <li><a href="/category/bo-ke-xiang-guan.html" role="presentation">博客相关</a></li>
+          <li><a href="/category/za-xiang.html" role="presentation">杂项</a></li>
+
+
+    </ul>
+  </div>
+</nav>
+    <!-- Progressbar -->
+    <div class="progress-container">
+        <span class="progress-bar"></span>
+    </div>
+
+    <!-- Page Header -->
+    <!-- Set your background image for this header on the line below. -->
+    <header id="blog-header" class="has-cover">
+      <div class="inner">
+        <nav id="navigation">
+            <span id="home-button" class="nav-button">
+                <a class="home-button" href="/" title="Home"><i class="ic ic-arrow-left"></i> Home</a>
+            </span>
+          <span id="menu-button" class="nav-button">
+            <a class="menu-button"><i class="ic ic-menu"></i> Menu</a>
+          </span>
+        </nav>
+        <h1 class="post-title">[读书笔记]Redis实战-列表</h1>
+        <!-- TODO : Proper class for headline -->
+        <span class="post-meta">
+                <a href="/author/qi.html">七</a>
+            | <time datetime="2017-12-24 00:00:00">2017-12-24 00:00:00</time>
+        </span>
+        <!-- TODO : Modified check -->
+            <div class="post-cover cover" style="background-color: black">
+      </div>
+    </header>
+
+  <section id="wrapper">
+    <a class="hidden-close"></a>
+
+    <!-- Post content -->
+    <main class="content" role="main">
+        <article class="post">
+        <div class="inner">
+            <section class="post-content">
+                <h4>简介</h4>
+<p>Redis 中的列表允许用户从序列的两端推入或弹出元素，获取列表元素、以及执行各种常见的列表操作，</p>
+<h4>命令</h4>
+<p>下表展示 redis 中列表常用的命令：</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>用例和描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RPUSH</td>
+<td>RPUSH key-name value [value ...] 将一个或多个值推入列表的右端</td>
+</tr>
+<tr>
+<td>LPUSH</td>
+<td>LPUSH key-name value [value ...] 将一个或多个值推入列表的左端</td>
+</tr>
+<tr>
+<td>RPOP</td>
+<td>RPOP key-name 移除并返回列表最右端的元素</td>
+</tr>
+<tr>
+<td>LPOP</td>
+<td>LPOP key-name 移除并返回列表最左端的元素</td>
+</tr>
+<tr>
+<td>LINDEX</td>
+<td>LINDEX key-name offset 返回列表中偏移量为 offset 的元素</td>
+</tr>
+<tr>
+<td>LRANGE</td>
+<td>LRANGE key-name start end 返回列表中从偏移量 start 到 偏移量 end 之间的所有元素，包含 start 和 end 在内</td>
+</tr>
+<tr>
+<td>LTRIM</td>
+<td>LTRIM key-name start end 只保留列表中从偏移量 start 到 偏移量 end 之间的元素，包含 start 和 end 在内</td>
+</tr>
+</tbody>
+</table>
+<p>代码示例(Python 3.6)：</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">rpush</span><span class="p">(</span><span class="s1">&#39;list-key&#39;</span><span class="p">,</span> <span class="s1">&#39;last&#39;</span><span class="p">)</span> <span class="o">#</span> <span class="err">返回值为列表长度</span>
+<span class="mi">1</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">lpush</span><span class="p">(</span><span class="s1">&#39;list-key&#39;</span><span class="p">,</span> <span class="s1">&#39;first&#39;</span><span class="p">)</span>
+<span class="mi">2</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">rpush</span><span class="p">(</span><span class="s1">&#39;list-key&#39;</span><span class="p">,</span> <span class="s1">&#39;new last&#39;</span><span class="p">)</span>
+<span class="mi">3</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">lrange</span><span class="p">(</span><span class="s1">&#39;list-key&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">[</span><span class="n">b</span><span class="s1">&#39;first&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;last&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;new last&#39;</span><span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">lpop</span><span class="p">(</span><span class="s1">&#39;list-key&#39;</span><span class="p">)</span>
+<span class="n">b</span><span class="s1">&#39;first&#39;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">lpop</span><span class="p">(</span><span class="s1">&#39;list-key&#39;</span><span class="p">)</span>
+<span class="n">b</span><span class="s1">&#39;last&#39;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">lrange</span><span class="p">(</span><span class="s1">&#39;list-key&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">[</span><span class="n">b</span><span class="s1">&#39;new last&#39;</span><span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">rpush</span><span class="p">(</span><span class="s1">&#39;list-key&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">)</span>
+<span class="mi">4</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">lrange</span><span class="p">(</span><span class="s1">&#39;list-key&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">[</span><span class="n">b</span><span class="s1">&#39;new last&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;c&#39;</span><span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">ltrim</span><span class="p">(</span><span class="s1">&#39;list-key&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">True</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">lrange</span><span class="p">(</span><span class="s1">&#39;list-key&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">[</span><span class="n">b</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;c&#39;</span><span class="p">]</span>
+</pre></div>
+
+
+<p>除以上命令外，还有几个命令，可以将元素从一个列表移动到另一个列表，或者阻塞执行命令的客户端，直到有其他客户端给列表添加元素为止，如下表：</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>用例和描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BLPOP</td>
+<td>BLPOP key-name [key-name ...] timeout 从第一个非空列表弹出位于最左端的元素，或者在 timeout 秒内阻塞并等待可弹出元素出现</td>
+</tr>
+<tr>
+<td>BRPOP</td>
+<td>BLPOP key-name [key-name ...] timeout 从第一个非空列表弹出位于最右端的元素，或者在 timeout 秒内阻塞并等待可弹出元素出现</td>
+</tr>
+<tr>
+<td>RPOPLPUSH</td>
+<td>RPOPLPUSH source-key dest-key 从 source-key 列表中弹出最右端的元素，然后将其推入 dest-key 列表的最左端，并返回这个元素</td>
+</tr>
+<tr>
+<td>BRPOPLPUSH</td>
+<td>BRPOPLPUSH source-key dest-key timeout 从 source-key 列表中弹出最右端的元素，然后将其推入 dest-key 列表的最左端，并返回这个元素；如果 source-key 为空，那么在 timeout 秒之内阻塞并等待可弹出的元素出现</td>
+</tr>
+</tbody>
+</table>
+<p>代码示例(Python 3.6)：</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">rpush</span><span class="p">(</span><span class="s1">&#39;list&#39;</span><span class="p">,</span> <span class="s1">&#39;item1&#39;</span><span class="p">)</span>
+<span class="mi">1</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">rpush</span><span class="p">(</span><span class="s1">&#39;list&#39;</span><span class="p">,</span> <span class="s1">&#39;item2&#39;</span><span class="p">)</span>
+<span class="mi">2</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">rpush</span><span class="p">(</span><span class="s1">&#39;list2&#39;</span><span class="p">,</span> <span class="s1">&#39;item3&#39;</span><span class="p">)</span>
+<span class="mi">1</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">brpoplpush</span><span class="p">(</span><span class="s1">&#39;list2&#39;</span><span class="p">,</span> <span class="s1">&#39;list&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">b</span><span class="s1">&#39;item3&#39;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">brpoplpush</span><span class="p">(</span><span class="s1">&#39;list2&#39;</span><span class="p">,</span> <span class="s1">&#39;list&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>        <span class="o">#</span> <span class="err">由于</span> <span class="n">list2</span> <span class="err">为空，因此会阻塞一秒，并返回空</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">lrange</span><span class="p">(</span><span class="s1">&#39;list&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">[</span><span class="n">b</span><span class="s1">&#39;item3&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;item1&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;item2&#39;</span><span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">blpop</span><span class="p">([</span><span class="s1">&#39;list2&#39;</span><span class="p">,</span> <span class="s1">&#39;list&#39;</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>    <span class="o">#</span> <span class="n">BLPOP</span> <span class="err">命令会从左到右检查传入的列表，并对最先遇到的非空列表执行弹出</span>
+<span class="p">(</span><span class="n">b</span><span class="s1">&#39;list&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;item3&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>对于阻塞弹出命令和弹出并推入命令的使用，最常见的就是消息传递和消息队列，将在之后进行介绍。</p>
+            </section>
+
+            <section class="post-info">
+                <div class="post-share">
+                    <a class="twitter" href="https://twitter.com/share?text=[读书笔记]Redis实战-列表&amp;url=/2017/12/24/redis_list/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <i class="ic ic-twitter"></i><span class="hidden">Twitter</span>
+                    </a>
+                    <a class="facebook" href="https://www.facebook.com/sharer/sharer.php?u=/2017/12/24/redis_list/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <i class="ic ic-facebook"></i><span class="hidden">Facebook</span>
+                    </a>
+                    <a class="googleplus" href="https://plus.google.com/share?url=/2017/12/24/redis_list/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <i class="ic ic-googleplus"></i><span class="hidden">Google+</span>
+                    </a>
+                    <div class="clear"></div>
+                </div>
+
+
+                <div class="clear"></div>
+
+                <aside class="post-author">
+
+
+                        <figure class="post-author-avatar">
+                            <img src="https://arulrajnet.github.io/attila-demo/assets/images/avatar.png" alt="七" />
+                        </figure>
+                    <div class="post-author-bio">
+                        <h4 class="post-author-name"><a href="/author/qi.html">七</a></h4>
+                            <p class="post-author-about">爬虫 / Android / 逆向工程师，数据科学萌新，主 Python、Java、Golang</p>
+                            <span class="post-author-location"><i class="ic ic-location"></i> ShangHai/China</span>
+                            <span class="post-author-website"><a href="https://www.biubiu7.cn"><i class="ic ic-link"></i> Website</a></span>
+                        <!-- Social linkes in alphabet order. -->
+                    </div>
+                    <div class="clear"></div>
+                </aside>
+
+                </section>
+
+
+
+                    <!-- valine 评论 start  -->
+
+                <!-- Link valine 的支持文件  -->
+                <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+                <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+                <div id="vcomments"></div>
+                <script type="text/javascript">
+                    new Valine({
+                        el: '#vcomments',
+                        appId: '2WOykmLJ16hcACygaOrAxKJQ-gzGzoHsz',
+                        appKey: 'roiSV2zvTdHgyKldWSCstCu2',
+                        verify: false,
+                        placeholder: 'Just go go',
+                    })
+                </script>
+                <!-- valine end -->
+
+
+                <aside class="post-nav">
+                    <div class="clear"></div>
+                </aside>
+
+            </div>
+
+        </article>
+    </main>
+      <!-- TODO : Body class -->
+    <div id="body-class" style="display: none;" class=""></div>
+
+    <footer id="footer">
+      <div class="inner">
+        <section class="credits">
+
+
+
+          <span>Theme <a href="https://github.com/arulrajnet/attila" rel="nofollow">Attila</a></span>
+          <span>Published with <a href="https://github.com/getpelican/pelican" rel="nofollow">Pelican</a></span>
+          <span><a href="http://www.miit.gov.cn" rel="nofollow">豫ICP备18037159号</a></span>
+        </section>
+      </div>
+    </footer>
+  </section>
+
+  <script type="text/javascript" src="/theme/js/script.js"></script>
+
+</body>
+</html>

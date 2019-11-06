@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+
+  <title>[读书笔记]Redis实战-排序、事务和键的过期时间</title>
+
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="origin" />
+  <meta name="generator" content="Pelican" />
+  <link href="/" rel="canonical" />
+
+  <!-- Feed -->
+        <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="biubiu7 Full Atom Feed" />
+          <link href="/feeds/{slug}.atom.xml" type="application/atom+xml" rel="alternate" title="biubiu7 Categories Atom Feed" />
+
+  <link href="/theme/css/style.css" type="text/css" rel="stylesheet" />
+
+  <!-- Code highlight color scheme -->
+      <link href="/theme/css/code_blocks/github.css" rel="stylesheet">
+
+
+  <!-- Custom fonts -->
+  <link href='https://fonts.loli.net/css?family=Montserrat:400,300' rel='stylesheet' type='text/css' />
+  <link href="https://fonts.loli.net/css?family=Lato" rel="stylesheet" type="text/css" />
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+
+  <link href="/2018/01/13/redis_others/" rel="canonical" />
+
+    <meta name="description" content="Redis 排序、事务和键的过期时间">
+
+    <meta name="author" content="qi">
+
+
+
+
+
+<!-- Open Graph -->
+<meta property="og:site_name" content="biubiu7"/>
+<meta property="og:title" content="[读书笔记]Redis实战-排序、事务和键的过期时间"/>
+<meta property="og:description" content="Redis 排序、事务和键的过期时间"/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:url" content="/2018/01/13/redis_others/"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2018-01-13 00:00:00+08:00"/>
+<meta property="article:modified_time" content=""/>
+<meta property="article:author" content="/author/qi.html">
+<meta property="article:section" content="杂项"/>
+<meta property="og:image" content="/theme/images/post-bg.jpg">
+
+<!-- Twitter Card -->
+
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Article",
+  "name": "[读书笔记]Redis实战-排序、事务和键的过期时间",
+  "headline": "[读书笔记]Redis实战-排序、事务和键的过期时间",
+  "datePublished": "2018-01-13 00:00:00+08:00",
+  "dateModified": "",
+  "author": {
+    "@type": "Person",
+    "name": "qi",
+    "url": "/author/qi.html"
+  },
+  "image": "/theme/images/post-bg.jpg",
+  "url": "/2018/01/13/redis_others/",
+  "description": "Redis 排序、事务和键的过期时间"
+}
+</script>
+</head>
+<!-- TODO : Body class -->
+<body class="home-template">
+
+<nav id="menu">
+  <a class="close-button">Close</a>
+  <div class="nav-wrapper">
+    <p class="nav-label">Menu</p>
+    <ul>
+          <li><a href="/category/ni-xiang.html" role="presentation">逆向</a></li>
+          <li><a href="/category/pa-chong.html" role="presentation">爬虫</a></li>
+          <li><a href="/category/bo-ke-xiang-guan.html" role="presentation">博客相关</a></li>
+          <li><a href="/category/za-xiang.html" role="presentation">杂项</a></li>
+
+
+    </ul>
+  </div>
+</nav>
+    <!-- Progressbar -->
+    <div class="progress-container">
+        <span class="progress-bar"></span>
+    </div>
+
+    <!-- Page Header -->
+    <!-- Set your background image for this header on the line below. -->
+    <header id="blog-header" class="has-cover">
+      <div class="inner">
+        <nav id="navigation">
+            <span id="home-button" class="nav-button">
+                <a class="home-button" href="/" title="Home"><i class="ic ic-arrow-left"></i> Home</a>
+            </span>
+          <span id="menu-button" class="nav-button">
+            <a class="menu-button"><i class="ic ic-menu"></i> Menu</a>
+          </span>
+        </nav>
+        <h1 class="post-title">[读书笔记]Redis实战-排序、事务和键的过期时间</h1>
+        <!-- TODO : Proper class for headline -->
+        <span class="post-meta">
+                <a href="/author/qi.html">七</a>
+            | <time datetime="2018-01-13 00:00:00">2018-01-13 00:00:00</time>
+        </span>
+        <!-- TODO : Modified check -->
+            <div class="post-cover cover" style="background-color: black">
+      </div>
+    </header>
+
+  <section id="wrapper">
+    <a class="hidden-close"></a>
+
+    <!-- Post content -->
+    <main class="content" role="main">
+        <article class="post">
+        <div class="inner">
+            <section class="post-content">
+                <p>之前介绍了 Redis 的多种数据结构和 Redis 的发布订阅，下面介绍一些其他的命令</p>
+<h4>排序</h4>
+<p>Redis 的排序类似 SQL 中的 order by ，可以根据某种比较规则对一系列元素进行有序的排列。</p>
+<p>命令如下：</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>用例和描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SORT</td>
+<td>SORT source-key [BY PATTERN] [LIMIT offset count] [GET pattern [GET pattern ...]] [ASC / DESC] [ALPHA] [STORE dest-key]    根据给定的选项，对输入的列表、集合、有序集合进行排序，然后返回或储存排序的结果</td>
+</tr>
+</tbody>
+</table>
+<p>使用 SORT 命令提供的选项，可以根据降序或者默认的升序来排序；可以将元素看作数字来排序；可以将元素看作二进制字符串来排序；可以使用被排序元素之外的其他值作为权重来排序；甚至可以从输入的列表、集合、有序集合之外的其他地方进行取值。</p>
+<p>代码示例如下(Python 3.6)：</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">rpush</span><span class="p">(</span><span class="s1">&#39;sort-input&#39;</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">110</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+<span class="mi">4</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">sort</span><span class="p">(</span><span class="s1">&#39;sort-input&#39;</span><span class="p">)</span>        <span class="o">#</span> <span class="err">根据数字大小排序</span>
+<span class="p">[</span><span class="n">b</span><span class="s1">&#39;7&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;15&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;23&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;110&#39;</span><span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">sort</span><span class="p">(</span><span class="s1">&#39;sort-input&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="k">True</span><span class="p">)</span>        <span class="o">#</span> <span class="err">根据字母表顺序排序</span>
+<span class="p">[</span><span class="n">b</span><span class="s1">&#39;110&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;15&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;23&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;7&#39;</span><span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">hset</span><span class="p">(</span><span class="s1">&#39;d-7&#39;</span><span class="p">,</span> <span class="s1">&#39;field&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="mi">1</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">hset</span><span class="p">(</span><span class="s1">&#39;d-15&#39;</span><span class="p">,</span> <span class="s1">&#39;field&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="mi">1</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">hset</span><span class="p">(</span><span class="s1">&#39;d-23&#39;</span><span class="p">,</span> <span class="s1">&#39;field&#39;</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span>
+<span class="mi">1</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">hset</span><span class="p">(</span><span class="s1">&#39;d-110&#39;</span><span class="p">,</span> <span class="s1">&#39;field&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="mi">1</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">sort</span><span class="p">(</span><span class="s1">&#39;sort-input&#39;</span><span class="p">,</span> <span class="k">by</span><span class="o">=</span><span class="s1">&#39;d-*-&gt;field&#39;</span><span class="p">)</span>        <span class="o">#</span> <span class="err">将散列的域用作权重，对</span> <span class="n">sort</span><span class="o">-</span><span class="k">input</span> <span class="err">列表进行排序</span>
+<span class="p">[</span><span class="n">b</span><span class="s1">&#39;15&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;110&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;7&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;23&#39;</span><span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">sort</span><span class="p">(</span><span class="s1">&#39;sort-input&#39;</span><span class="p">,</span> <span class="k">by</span><span class="o">=</span><span class="s1">&#39;d-*-&gt;field&#39;</span><span class="p">,</span> <span class="k">get</span><span class="o">=</span><span class="s1">&#39;d-*-&gt;field&#39;</span><span class="p">)</span>        <span class="o">#</span> <span class="err">获取外部数据，并将它们用作命令的返回值，而不是返回被排序的数据</span>
+<span class="p">[</span><span class="n">b</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;5&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;9&#39;</span><span class="p">]</span>
+</pre></div>
+
+
+<h4>事务</h4>
+<p>Redis 有 5 个可以让用户在不被打断的情况下对多个键执行操作，分别是 WATCH 、MULTI 、EXEC 、UBWATCH 、DISCARD 。</p>
+<p>Redis 的基本事务需要用到 MULTI 命令和 EXEC 命令，这种事务可以让一个客户端在不被其他客户端打断的情况下执行多个命令。与关系数据库的事务不同，Redis 中被 MULTI 和 EXEC 命令包围的所有命令会一个接一个的执行，直到所有命令执行完毕。当一个事务执行完毕之后，Redis 才会处理其他客户端的命令。</p>
+<p>在 Python 的 Redis 客户端中， Redis 事务是由 pipeline 实现的：对连接对象使用 pipeline() 方法将创建一个事务，在正常情况下，客户端会自动使用 MULTI 和 EXEC 包裹起用户输入的多个命令，在事务执行时一次性将所有命令都发送给 Redis 。</p>
+<p>未使用事务的代码如下：</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="nv">def</span> <span class="nv">nonrans</span><span class="ss">()</span>:
+...     <span class="nv">print</span><span class="ss">(</span><span class="nv">conn</span>.<span class="nv">incr</span><span class="ss">(</span><span class="s1">&#39;</span><span class="s">notrans:</span><span class="s1">&#39;</span><span class="ss">))</span>    # 对 <span class="nv">notrans</span>: 执行自增操作
+...     <span class="nv">time</span>.<span class="nv">sleep</span><span class="ss">(</span>.<span class="mi">1</span><span class="ss">)</span>
+...     <span class="nv">conn</span>.<span class="nv">incr</span><span class="ss">(</span><span class="s1">&#39;</span><span class="s">nontrans:</span><span class="s1">&#39;</span>, <span class="o">-</span><span class="mi">1</span><span class="ss">)</span>        # 对 <span class="nv">notrans</span>: 执行自增操作
+
+<span class="o">&gt;&gt;&gt;</span> <span class="k">if</span> <span class="mi">1</span>:
+...     <span class="k">for</span> <span class="nv">i</span> <span class="nv">in</span> <span class="nv">range</span><span class="ss">(</span><span class="mi">3</span><span class="ss">)</span>:
+...         <span class="nv">threading</span>.<span class="nv">Thread</span><span class="ss">(</span><span class="nv">target</span><span class="o">=</span><span class="nv">nonrans</span><span class="ss">)</span>.<span class="nv">start</span><span class="ss">()</span>
+...     <span class="nv">time</span>.<span class="nv">sleep</span><span class="ss">(</span>.<span class="mi">5</span><span class="ss">)</span>
+<span class="mi">1</span>    # 由于没有使用事务，所以三个线程执行的多个命令互相交错，使得计数器的值持续增大
+<span class="mi">2</span>
+<span class="mi">3</span>
+</pre></div>
+
+
+<p>使用事务的代码示例：</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="nv">def</span> <span class="nv">trans</span><span class="ss">()</span>:
+...     <span class="nv">pipeline</span> <span class="o">=</span> <span class="nv">conn</span>.<span class="nv">pipeline</span><span class="ss">()</span>
+...     <span class="nv">pipeline</span>.<span class="nv">incr</span><span class="ss">(</span><span class="s1">&#39;</span><span class="s">trans:</span><span class="s1">&#39;</span><span class="ss">)</span>
+...     <span class="nv">time</span>.<span class="nv">sleep</span><span class="ss">(</span>.<span class="mi">1</span><span class="ss">)</span>
+...     <span class="nv">pipeline</span>.<span class="nv">incr</span><span class="ss">(</span><span class="s1">&#39;</span><span class="s">trans:</span><span class="s1">&#39;</span>, <span class="o">-</span><span class="mi">1</span><span class="ss">)</span>
+...     <span class="nv">print</span><span class="ss">(</span><span class="nv">pipeline</span>.<span class="nv">execute</span><span class="ss">()</span>[<span class="mi">0</span>]<span class="ss">)</span>
+
+<span class="o">&gt;&gt;&gt;</span>  <span class="k">if</span> <span class="mi">1</span>:
+...     <span class="k">for</span> <span class="nv">i</span> <span class="nv">in</span> <span class="nv">range</span><span class="ss">(</span><span class="mi">3</span><span class="ss">)</span>:
+...         <span class="nv">threading</span>.<span class="nv">Thread</span><span class="ss">(</span><span class="nv">target</span><span class="o">=</span><span class="nv">trans</span><span class="ss">)</span>.<span class="nv">start</span><span class="ss">()</span>
+...     <span class="nv">time</span>.<span class="nv">sleep</span><span class="ss">(</span>.<span class="mi">5</span><span class="ss">)</span>
+<span class="mi">1</span>
+<span class="mi">1</span>
+<span class="mi">1</span>
+</pre></div>
+
+
+<p>可以看到，使用事务时，各线程都可以在不被其他线程打乱的情况下执行各自队列中的命令。</p>
+<h4>键的过期时间</h4>
+<p>使用 Redis 存储数据的时候，有些数据可能在某个时间点之后就不用了，虽然我们可以使用 DEL 命令手动去删除无用数据，但是使用 Redis 提供的键过期操作是更好的选择。设置了过期时间的键会在这个键的过期时间到达的时候自动删除该键。</p>
+<p>Redis 提供的用于设置过期时间的命令如下：</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>示例和描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PERSIST</td>
+<td>PERSIST key-name 移除键的过期时间</td>
+</tr>
+<tr>
+<td>TTL</td>
+<td>TTL key-name 查看键距离过期还有多少秒</td>
+</tr>
+<tr>
+<td>EXPIRE</td>
+<td>EXPIRE key-name seconds 让给定键在 seconds 秒后过期</td>
+</tr>
+<tr>
+<td>EXPIREAT</td>
+<td>EXPIREAT key-name timestamp 将给定键的过期时间设置为给定的 UNIX 时间戳</td>
+</tr>
+<tr>
+<td>PTTL</td>
+<td>PTTL key-name 查看给定键距离过期时间还有多少毫秒，Redis 2.6 及以上版本可用</td>
+</tr>
+<tr>
+<td>PEXPIRE</td>
+<td>PEXPIRE key-name milliseconds 让给定键在指定的毫秒之后过期，Redis 2.6 及以上版本可用</td>
+</tr>
+<tr>
+<td>PEXPIREAT</td>
+<td>PEXPIREAT key-name timestamp-milliseconds 将一个毫秒级精度的 UNIX 时间戳设置为指定键的过期时间，Redis 2.6 及以上版本可用</td>
+</tr>
+</tbody>
+</table>
+<p>使用示例：</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="k">set</span><span class="p">(</span><span class="s1">&#39;key&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">)</span>
+<span class="k">True</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="s1">&#39;key&#39;</span><span class="p">)</span>
+<span class="n">b</span><span class="s1">&#39;value&#39;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">expire</span><span class="p">(</span><span class="s1">&#39;key&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="k">True</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">time</span><span class="p">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="s1">&#39;key&#39;</span><span class="p">)</span>
+</pre></div>
+            </section>
+
+            <section class="post-info">
+                <div class="post-share">
+                    <a class="twitter" href="https://twitter.com/share?text=[读书笔记]Redis实战-排序、事务和键的过期时间&amp;url=/2018/01/13/redis_others/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <i class="ic ic-twitter"></i><span class="hidden">Twitter</span>
+                    </a>
+                    <a class="facebook" href="https://www.facebook.com/sharer/sharer.php?u=/2018/01/13/redis_others/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <i class="ic ic-facebook"></i><span class="hidden">Facebook</span>
+                    </a>
+                    <a class="googleplus" href="https://plus.google.com/share?url=/2018/01/13/redis_others/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <i class="ic ic-googleplus"></i><span class="hidden">Google+</span>
+                    </a>
+                    <div class="clear"></div>
+                </div>
+
+
+                <div class="clear"></div>
+
+                <aside class="post-author">
+
+
+                        <figure class="post-author-avatar">
+                            <img src="https://arulrajnet.github.io/attila-demo/assets/images/avatar.png" alt="七" />
+                        </figure>
+                    <div class="post-author-bio">
+                        <h4 class="post-author-name"><a href="/author/qi.html">七</a></h4>
+                            <p class="post-author-about">爬虫 / Android / 逆向工程师，数据科学萌新，主 Python、Java、Golang</p>
+                            <span class="post-author-location"><i class="ic ic-location"></i> ShangHai/China</span>
+                            <span class="post-author-website"><a href="https://www.biubiu7.cn"><i class="ic ic-link"></i> Website</a></span>
+                        <!-- Social linkes in alphabet order. -->
+                    </div>
+                    <div class="clear"></div>
+                </aside>
+
+                </section>
+
+
+
+                    <!-- valine 评论 start  -->
+
+                <!-- Link valine 的支持文件  -->
+                <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+                <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+                <div id="vcomments"></div>
+                <script type="text/javascript">
+                    new Valine({
+                        el: '#vcomments',
+                        appId: '2WOykmLJ16hcACygaOrAxKJQ-gzGzoHsz',
+                        appKey: 'roiSV2zvTdHgyKldWSCstCu2',
+                        verify: false,
+                        placeholder: 'Just go go',
+                    })
+                </script>
+                <!-- valine end -->
+
+
+                <aside class="post-nav">
+                    <div class="clear"></div>
+                </aside>
+
+            </div>
+
+        </article>
+    </main>
+      <!-- TODO : Body class -->
+    <div id="body-class" style="display: none;" class=""></div>
+
+    <footer id="footer">
+      <div class="inner">
+        <section class="credits">
+
+
+
+          <span>Theme <a href="https://github.com/arulrajnet/attila" rel="nofollow">Attila</a></span>
+          <span>Published with <a href="https://github.com/getpelican/pelican" rel="nofollow">Pelican</a></span>
+          <span><a href="http://www.miit.gov.cn" rel="nofollow">豫ICP备18037159号</a></span>
+        </section>
+      </div>
+    </footer>
+  </section>
+
+  <script type="text/javascript" src="/theme/js/script.js"></script>
+
+</body>
+</html>

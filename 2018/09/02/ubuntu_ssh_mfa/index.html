@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+
+  <title>Ubuntu Server 16.04 SSH 开启多因素认证（MFA）</title>
+
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="origin" />
+  <meta name="generator" content="Pelican" />
+  <link href="/" rel="canonical" />
+
+  <!-- Feed -->
+        <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="biubiu7 Full Atom Feed" />
+          <link href="/feeds/{slug}.atom.xml" type="application/atom+xml" rel="alternate" title="biubiu7 Categories Atom Feed" />
+
+  <link href="/theme/css/style.css" type="text/css" rel="stylesheet" />
+
+  <!-- Code highlight color scheme -->
+      <link href="/theme/css/code_blocks/github.css" rel="stylesheet">
+
+
+  <!-- Custom fonts -->
+  <link href='https://fonts.loli.net/css?family=Montserrat:400,300' rel='stylesheet' type='text/css' />
+  <link href="https://fonts.loli.net/css?family=Lato" rel="stylesheet" type="text/css" />
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+
+  <link href="/2018/09/02/ubuntu_ssh_mfa/" rel="canonical" />
+
+    <meta name="description" content="Ubuntu Server 16.04 SSH 开启多因素认证（MFA）">
+
+    <meta name="author" content="qi">
+
+
+
+
+
+<!-- Open Graph -->
+<meta property="og:site_name" content="biubiu7"/>
+<meta property="og:title" content="Ubuntu Server 16.04 SSH 开启多因素认证（MFA）"/>
+<meta property="og:description" content="Ubuntu Server 16.04 SSH 开启多因素认证（MFA）"/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:url" content="/2018/09/02/ubuntu_ssh_mfa/"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2018-09-02 00:00:00+08:00"/>
+<meta property="article:modified_time" content=""/>
+<meta property="article:author" content="/author/qi.html">
+<meta property="article:section" content="杂项"/>
+<meta property="og:image" content="/theme/images/post-bg.jpg">
+
+<!-- Twitter Card -->
+
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Article",
+  "name": "Ubuntu Server 16.04 SSH 开启多因素认证（MFA）",
+  "headline": "Ubuntu Server 16.04 SSH 开启多因素认证（MFA）",
+  "datePublished": "2018-09-02 00:00:00+08:00",
+  "dateModified": "",
+  "author": {
+    "@type": "Person",
+    "name": "qi",
+    "url": "/author/qi.html"
+  },
+  "image": "/theme/images/post-bg.jpg",
+  "url": "/2018/09/02/ubuntu_ssh_mfa/",
+  "description": "Ubuntu Server 16.04 SSH 开启多因素认证（MFA）"
+}
+</script>
+</head>
+<!-- TODO : Body class -->
+<body class="home-template">
+
+<nav id="menu">
+  <a class="close-button">Close</a>
+  <div class="nav-wrapper">
+    <p class="nav-label">Menu</p>
+    <ul>
+          <li><a href="/category/ni-xiang.html" role="presentation">逆向</a></li>
+          <li><a href="/category/pa-chong.html" role="presentation">爬虫</a></li>
+          <li><a href="/category/bo-ke-xiang-guan.html" role="presentation">博客相关</a></li>
+          <li><a href="/category/za-xiang.html" role="presentation">杂项</a></li>
+
+
+    </ul>
+  </div>
+</nav>
+    <!-- Progressbar -->
+    <div class="progress-container">
+        <span class="progress-bar"></span>
+    </div>
+
+    <!-- Page Header -->
+    <!-- Set your background image for this header on the line below. -->
+    <header id="blog-header" class="has-cover">
+      <div class="inner">
+        <nav id="navigation">
+            <span id="home-button" class="nav-button">
+                <a class="home-button" href="/" title="Home"><i class="ic ic-arrow-left"></i> Home</a>
+            </span>
+          <span id="menu-button" class="nav-button">
+            <a class="menu-button"><i class="ic ic-menu"></i> Menu</a>
+          </span>
+        </nav>
+        <h1 class="post-title">Ubuntu Server 16.04 SSH 开启多因素认证（MFA）</h1>
+        <!-- TODO : Proper class for headline -->
+        <span class="post-meta">
+                <a href="/author/qi.html">七</a>
+            | <time datetime="2018-09-02 00:00:00">2018-09-02 00:00:00</time>
+        </span>
+        <!-- TODO : Modified check -->
+            <div class="post-cover cover" style="background-color: black">
+      </div>
+    </header>
+
+  <section id="wrapper">
+    <a class="hidden-close"></a>
+
+    <!-- Post content -->
+    <main class="content" role="main">
+        <article class="post">
+        <div class="inner">
+            <section class="post-content">
+                <p>今天想把腾讯云的服务器（ubuntu 16.04）加上二次认证，大致google了一下，大致流程如下。</p>
+<h5>安装Google PAM</h5>
+<p>首先更新一下ubuntu软件仓库缓存，然后apt安装libpam-google-authenticator。</p>
+<div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span> <span class="k">update</span>
+<span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">libpam</span><span class="o">-</span><span class="n">google</span><span class="o">-</span><span class="n">authenticator</span>
+</pre></div>
+
+
+<h5>初始化</h5>
+<p>安装完成之后运行google-authenticator进行初始化：</p>
+<div class="highlight"><pre><span></span><span class="n">google</span><span class="o">-</span><span class="n">authenticator</span>
+</pre></div>
+
+
+<p>出现如下提示，回复y：</p>
+<div class="highlight"><pre><span></span><span class="k">Do</span> <span class="nv">you</span> <span class="nv">want</span> <span class="nv">authentication</span> <span class="nv">tokens</span> <span class="nv">to</span> <span class="nv">be</span> <span class="nv">time</span><span class="o">-</span><span class="nv">based</span> <span class="ss">(</span><span class="nv">y</span><span class="o">/</span><span class="nv">n</span><span class="ss">)</span> <span class="nv">y</span>
+</pre></div>
+
+
+<p>然后会输出一些信息，其中包含一个很大的二维码，用你手机上的google身份验证器（或者别的OATH-TOTP软件）扫描输出的二维码，添加成功之后会有每30秒刷新一次的6位数字码。</p>
+<p>之后对输出的问题一一回复：</p>
+<div class="highlight"><pre><span></span>是否将 <span class="nv">key</span> 和配置写入 .<span class="nv">google_authenticator</span> 文件，我们选择<span class="nv">y</span>
+<span class="k">Do</span> <span class="nv">you</span> <span class="nv">want</span> <span class="nv">me</span> <span class="nv">to</span> <span class="nv">update</span> <span class="nv">your</span> <span class="s2">&quot;</span><span class="s">/home/ubuntu/.google_authenticator</span><span class="s2">&quot;</span> <span class="nv">file</span> <span class="ss">(</span><span class="nv">y</span><span class="o">/</span><span class="nv">n</span><span class="ss">)</span> <span class="nv">y</span>
+</pre></div>
+
+
+<p>&ensp;</p>
+<div class="highlight"><pre><span></span>是否设置使用过的密码立即过期，防止有人截获你使用的代码用它登录，选<span class="nv">y</span>
+<span class="k">Do</span> <span class="nv">you</span> <span class="nv">want</span> <span class="nv">to</span> <span class="nv">disallow</span> <span class="nv">multiple</span> <span class="nv">uses</span> <span class="nv">of</span> <span class="nv">the</span> <span class="nv">same</span> <span class="nv">authentication</span>
+<span class="nv">token</span>? <span class="nv">This</span> <span class="nv">restricts</span> <span class="nv">you</span> <span class="nv">to</span> <span class="nv">one</span> <span class="nv">login</span> <span class="nv">about</span> <span class="nv">every</span> <span class="mi">30</span><span class="nv">s</span>, <span class="nv">but</span> <span class="nv">it</span> <span class="nv">increases</span>
+<span class="nv">your</span> <span class="nv">chances</span> <span class="nv">to</span> <span class="nv">notice</span> <span class="nv">or</span> <span class="nv">even</span> <span class="nv">prevent</span> <span class="nv">man</span><span class="o">-</span><span class="nv">in</span><span class="o">-</span><span class="nv">the</span><span class="o">-</span><span class="nv">middle</span> <span class="nv">attacks</span> <span class="ss">(</span><span class="nv">y</span><span class="o">/</span><span class="nv">n</span><span class="ss">)</span> <span class="nv">y</span>
+</pre></div>
+
+
+<p>&ensp;</p>
+<div class="highlight"><pre><span></span>默认每组数字码的有效时间是<span class="mi">30</span><span class="nv">s</span>，是否把时间调到<span class="mi">4</span>分钟，选<span class="nv">n</span>
+<span class="nv">By</span> <span class="nv">default</span>, <span class="nv">tokens</span> <span class="nv">are</span> <span class="nv">good</span> <span class="k">for</span> <span class="mi">30</span> <span class="nv">seconds</span> <span class="nv">and</span> <span class="nv">in</span> <span class="nv">order</span> <span class="nv">to</span> <span class="nv">compensate</span> <span class="k">for</span>
+<span class="nv">possible</span> <span class="nv">time</span><span class="o">-</span><span class="nv">skew</span> <span class="nv">between</span> <span class="nv">the</span> <span class="nv">client</span> <span class="nv">and</span> <span class="nv">the</span> <span class="nv">server</span>, <span class="nv">we</span> <span class="nv">allow</span> <span class="nv">an</span> <span class="nv">extra</span>
+<span class="nv">token</span> <span class="nv">before</span> <span class="nv">and</span> <span class="nv">after</span> <span class="nv">the</span> <span class="nv">current</span> <span class="nv">time</span>. <span class="k">If</span> <span class="nv">you</span> <span class="nv">experience</span> <span class="nv">problems</span> <span class="nv">with</span> <span class="nv">poor</span>
+<span class="nv">time</span> <span class="nv">synchronization</span>, <span class="nv">you</span> <span class="nv">can</span> <span class="nv">increase</span> <span class="nv">the</span> <span class="nv">window</span> <span class="nv">from</span> <span class="nv">its</span> <span class="nv">default</span>
+<span class="nv">size</span> <span class="nv">of</span> <span class="mi">1</span>:<span class="mi">30</span><span class="nv">min</span> <span class="nv">to</span> <span class="nv">about</span> <span class="mi">4</span><span class="nv">min</span>. <span class="k">Do</span> <span class="nv">you</span> <span class="nv">want</span> <span class="nv">to</span> <span class="k">do</span> <span class="nv">so</span> <span class="ss">(</span><span class="nv">y</span><span class="o">/</span><span class="nv">n</span><span class="ss">)</span> <span class="nv">n</span>
+</pre></div>
+
+
+<p>&ensp;</p>
+<div class="highlight"><pre><span></span>是否限制<span class="mi">30</span>秒内只允许尝试登录<span class="mi">3</span>次，选<span class="nv">y</span>
+<span class="k">If</span> <span class="nv">the</span> <span class="nv">computer</span> <span class="nv">that</span> <span class="nv">you</span> <span class="nv">are</span> <span class="nv">logging</span> <span class="nv">into</span> <span class="nv">isn</span><span class="s1">&#39;</span><span class="s">t hardened against brute-force</span>
+<span class="nv">login</span> <span class="nv">attempts</span>, <span class="nv">you</span> <span class="nv">can</span> <span class="nv">enable</span> <span class="nv">rate</span><span class="o">-</span><span class="nv">limiting</span> <span class="k">for</span> <span class="nv">the</span> <span class="nv">authentication</span> <span class="nv">module</span>.
+<span class="nv">By</span> <span class="nv">default</span>, <span class="nv">this</span> <span class="nv">limits</span> <span class="nv">attackers</span> <span class="nv">to</span> <span class="nv">no</span> <span class="nv">more</span> <span class="nv">than</span> <span class="mi">3</span> <span class="nv">login</span> <span class="nv">attempts</span> <span class="nv">every</span> <span class="mi">30</span><span class="nv">s</span>.
+<span class="k">Do</span> <span class="nv">you</span> <span class="nv">want</span> <span class="nv">to</span> <span class="nv">enable</span> <span class="nv">rate</span><span class="o">-</span><span class="nv">limiting</span> <span class="ss">(</span><span class="nv">y</span><span class="o">/</span><span class="nv">n</span><span class="ss">)</span> <span class="nv">y</span>
+</pre></div>
+
+
+<h5>配置</h5>
+<p>修改 /etc/pam.d/sshd 文件</p>
+<div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">vim</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">pam</span><span class="p">.</span><span class="n">d</span><span class="o">/</span><span class="n">sshd</span>
+</pre></div>
+
+
+<p>在文件底部添加一行：</p>
+<div class="highlight"><pre><span></span><span class="n">auth</span> <span class="n">required</span> <span class="n">pam_google_authenticator</span><span class="p">.</span><span class="n">so</span> <span class="n">nullok</span>
+</pre></div>
+
+
+<p>最后的 nullok 是指这种登录方式是可选的，如果最后测试可用，可以把 nullok 删掉。
+修改 /etc/ssh/sshd_config 文件</p>
+<div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">vim</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">ssh</span><span class="o">/</span><span class="n">sshd_config</span>
+</pre></div>
+
+
+<p>找到 ChallengeResponseAuthentication ，并设置为 yes</p>
+<div class="highlight"><pre><span></span><span class="n">ChallengeResponseAuthentication</span> <span class="n">yes</span>
+</pre></div>
+
+
+<p>重启 ssh 服务：</p>
+<div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">service</span> <span class="n">ssh</span> <span class="k">restart</span>
+</pre></div>
+
+
+<p>从新的终端尝试 ssh 登录，应该已经可以使用数字验证码登陆了，不过建议继续配置 ssh 密钥 + mfa 登录
+修改 /etc/ssh/sshd_config 文件</p>
+<div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">vim</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">ssh</span><span class="o">/</span><span class="n">sshd_config</span>
+</pre></div>
+
+
+<p>在底部添加如下行：</p>
+<div class="highlight"><pre><span></span><span class="n">UsePAM</span> <span class="n">yes</span>
+<span class="n">AuthenticationMethods</span> <span class="n">publickey</span><span class="p">,</span><span class="n">keyboard</span><span class="o">-</span><span class="n">interactive</span>
+</pre></div>
+
+
+<p>然后修改 /etc/pam.d/sshd 文件，找到 @include common-auth ，在行前加#号注释掉：</p>
+<div class="highlight"><pre><span></span>#@<span class="k">include</span> <span class="nv">common</span><span class="o">-</span><span class="nv">auth</span>
+</pre></div>
+
+
+<p>重启 ssh 服务：</p>
+<div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">service</span> <span class="n">ssh</span> <span class="k">restart</span>
+</pre></div>
+
+
+<p>从新的终端尝试登录，应该ok了</p>
+            </section>
+
+            <section class="post-info">
+                <div class="post-share">
+                    <a class="twitter" href="https://twitter.com/share?text=Ubuntu Server 16.04 SSH 开启多因素认证（MFA）&amp;url=/2018/09/02/ubuntu_ssh_mfa/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <i class="ic ic-twitter"></i><span class="hidden">Twitter</span>
+                    </a>
+                    <a class="facebook" href="https://www.facebook.com/sharer/sharer.php?u=/2018/09/02/ubuntu_ssh_mfa/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <i class="ic ic-facebook"></i><span class="hidden">Facebook</span>
+                    </a>
+                    <a class="googleplus" href="https://plus.google.com/share?url=/2018/09/02/ubuntu_ssh_mfa/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <i class="ic ic-googleplus"></i><span class="hidden">Google+</span>
+                    </a>
+                    <div class="clear"></div>
+                </div>
+
+
+                <div class="clear"></div>
+
+                <aside class="post-author">
+
+
+                        <figure class="post-author-avatar">
+                            <img src="https://arulrajnet.github.io/attila-demo/assets/images/avatar.png" alt="七" />
+                        </figure>
+                    <div class="post-author-bio">
+                        <h4 class="post-author-name"><a href="/author/qi.html">七</a></h4>
+                            <p class="post-author-about">爬虫 / Android / 逆向工程师，数据科学萌新，主 Python、Java、Golang</p>
+                            <span class="post-author-location"><i class="ic ic-location"></i> ShangHai/China</span>
+                            <span class="post-author-website"><a href="https://www.biubiu7.cn"><i class="ic ic-link"></i> Website</a></span>
+                        <!-- Social linkes in alphabet order. -->
+                    </div>
+                    <div class="clear"></div>
+                </aside>
+
+                </section>
+
+
+
+                    <!-- valine 评论 start  -->
+
+                <!-- Link valine 的支持文件  -->
+                <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+                <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+                <div id="vcomments"></div>
+                <script type="text/javascript">
+                    new Valine({
+                        el: '#vcomments',
+                        appId: '2WOykmLJ16hcACygaOrAxKJQ-gzGzoHsz',
+                        appKey: 'roiSV2zvTdHgyKldWSCstCu2',
+                        verify: false,
+                        placeholder: 'Just go go',
+                    })
+                </script>
+                <!-- valine end -->
+
+
+                <aside class="post-nav">
+                    <div class="clear"></div>
+                </aside>
+
+            </div>
+
+        </article>
+    </main>
+      <!-- TODO : Body class -->
+    <div id="body-class" style="display: none;" class=""></div>
+
+    <footer id="footer">
+      <div class="inner">
+        <section class="credits">
+
+
+
+          <span>Theme <a href="https://github.com/arulrajnet/attila" rel="nofollow">Attila</a></span>
+          <span>Published with <a href="https://github.com/getpelican/pelican" rel="nofollow">Pelican</a></span>
+          <span><a href="http://www.miit.gov.cn" rel="nofollow">豫ICP备18037159号</a></span>
+        </section>
+      </div>
+    </footer>
+  </section>
+
+  <script type="text/javascript" src="/theme/js/script.js"></script>
+
+</body>
+</html>

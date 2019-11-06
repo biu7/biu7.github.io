@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+
+  <title>[读书笔记]Redis实战-集合</title>
+
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="origin" />
+  <meta name="generator" content="Pelican" />
+  <link href="/" rel="canonical" />
+
+  <!-- Feed -->
+        <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="biubiu7 Full Atom Feed" />
+          <link href="/feeds/{slug}.atom.xml" type="application/atom+xml" rel="alternate" title="biubiu7 Categories Atom Feed" />
+
+  <link href="/theme/css/style.css" type="text/css" rel="stylesheet" />
+
+  <!-- Code highlight color scheme -->
+      <link href="/theme/css/code_blocks/github.css" rel="stylesheet">
+
+
+  <!-- Custom fonts -->
+  <link href='https://fonts.loli.net/css?family=Montserrat:400,300' rel='stylesheet' type='text/css' />
+  <link href="https://fonts.loli.net/css?family=Lato" rel="stylesheet" type="text/css" />
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+
+  <link href="/2018/01/02/redis_set/" rel="canonical" />
+
+    <meta name="description" content="Redis 集合">
+
+    <meta name="author" content="qi">
+
+
+
+
+
+<!-- Open Graph -->
+<meta property="og:site_name" content="biubiu7"/>
+<meta property="og:title" content="[读书笔记]Redis实战-集合"/>
+<meta property="og:description" content="Redis 集合"/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:url" content="/2018/01/02/redis_set/"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2018-01-02 00:00:00+08:00"/>
+<meta property="article:modified_time" content=""/>
+<meta property="article:author" content="/author/qi.html">
+<meta property="article:section" content="杂项"/>
+<meta property="og:image" content="/theme/images/post-bg.jpg">
+
+<!-- Twitter Card -->
+
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Article",
+  "name": "[读书笔记]Redis实战-集合",
+  "headline": "[读书笔记]Redis实战-集合",
+  "datePublished": "2018-01-02 00:00:00+08:00",
+  "dateModified": "",
+  "author": {
+    "@type": "Person",
+    "name": "qi",
+    "url": "/author/qi.html"
+  },
+  "image": "/theme/images/post-bg.jpg",
+  "url": "/2018/01/02/redis_set/",
+  "description": "Redis 集合"
+}
+</script>
+</head>
+<!-- TODO : Body class -->
+<body class="home-template">
+
+<nav id="menu">
+  <a class="close-button">Close</a>
+  <div class="nav-wrapper">
+    <p class="nav-label">Menu</p>
+    <ul>
+          <li><a href="/category/ni-xiang.html" role="presentation">逆向</a></li>
+          <li><a href="/category/pa-chong.html" role="presentation">爬虫</a></li>
+          <li><a href="/category/bo-ke-xiang-guan.html" role="presentation">博客相关</a></li>
+          <li><a href="/category/za-xiang.html" role="presentation">杂项</a></li>
+
+
+    </ul>
+  </div>
+</nav>
+    <!-- Progressbar -->
+    <div class="progress-container">
+        <span class="progress-bar"></span>
+    </div>
+
+    <!-- Page Header -->
+    <!-- Set your background image for this header on the line below. -->
+    <header id="blog-header" class="has-cover">
+      <div class="inner">
+        <nav id="navigation">
+            <span id="home-button" class="nav-button">
+                <a class="home-button" href="/" title="Home"><i class="ic ic-arrow-left"></i> Home</a>
+            </span>
+          <span id="menu-button" class="nav-button">
+            <a class="menu-button"><i class="ic ic-menu"></i> Menu</a>
+          </span>
+        </nav>
+        <h1 class="post-title">[读书笔记]Redis实战-集合</h1>
+        <!-- TODO : Proper class for headline -->
+        <span class="post-meta">
+                <a href="/author/qi.html">七</a>
+            | <time datetime="2018-01-02 00:00:00">2018-01-02 00:00:00</time>
+        </span>
+        <!-- TODO : Modified check -->
+            <div class="post-cover cover" style="background-color: black">
+      </div>
+    </header>
+
+  <section id="wrapper">
+    <a class="hidden-close"></a>
+
+    <!-- Post content -->
+    <main class="content" role="main">
+        <article class="post">
+        <div class="inner">
+            <section class="post-content">
+                <h4>简介</h4>
+<p>Redis 中的集合以无序的方式来存储不同的元素，用户可以对集合执行添加元素、移除元素、检察元素是否存在等操作。</p>
+<h4>命令</h4>
+<p>集合常用命令如下表：</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>用例和描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SADD</td>
+<td>SADD key-name item [item ...] 将一个或多个元素添加到集合，并返回被添加元素中原本不存在于集合中的元素数量</td>
+</tr>
+<tr>
+<td>SREM</td>
+<td>SREM key-name item [item ...] 从集合中移除一个或多个元素，并返回被移除元素的数量</td>
+</tr>
+<tr>
+<td>SISMEMBER</td>
+<td>SISMEMBER key-name item 检查元素是否存在于集合中</td>
+</tr>
+<tr>
+<td>SCARD</td>
+<td>SCARD key-name 返回集合中的元素数量</td>
+</tr>
+<tr>
+<td>SMEMBERS</td>
+<td>SMEMBERS key-name 返回集合中的所有元素</td>
+</tr>
+<tr>
+<td>SRANDMEMBER</td>
+<td>SRANDMEMBER key-name [count] 从集合中随机返回一个或多个元素。当 count 为正数时，返回的元素不会重复，当 count 为负数时， 命令返回的随机元素可能会出现重复</td>
+</tr>
+<tr>
+<td>SPOP</td>
+<td>SPOP key-name 随机的移除一个元素，并返回被移除的元素</td>
+</tr>
+<tr>
+<td>SMOVE</td>
+<td>SMOVE source-key dest-key item 如果集合 source-key 中包含元素 item ，那么从 source-key 中移除 item ，并添加到集合 dest-key 中。如果 item 被成功移除，返回 1 ，否则返回 0 。</td>
+</tr>
+</tbody>
+</table>
+<p>使用示例如下(Python 3.6)：</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">sadd</span><span class="p">(</span><span class="s1">&#39;set-key&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">)</span>
+<span class="mi">3</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">srem</span><span class="p">(</span><span class="s1">&#39;set-key&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">)</span>
+<span class="mi">1</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">srem</span><span class="p">(</span><span class="s1">&#39;set-key&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">)</span>
+<span class="mi">0</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">scard</span><span class="p">(</span><span class="s1">&#39;set-key&#39;</span><span class="p">)</span>
+<span class="mi">2</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">smembers</span><span class="p">(</span><span class="s1">&#39;set-key&#39;</span><span class="p">)</span>
+<span class="err">{</span><span class="n">b</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;b&#39;</span><span class="err">}</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">smove</span><span class="p">(</span><span class="s1">&#39;set-key&#39;</span><span class="p">,</span> <span class="s1">&#39;set-key2&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+<span class="k">True</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">smove</span><span class="p">(</span><span class="s1">&#39;set-key&#39;</span><span class="p">,</span> <span class="s1">&#39;set-key2&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">)</span>
+<span class="k">False</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">smembers</span><span class="p">(</span><span class="s1">&#39;set-key&#39;</span><span class="p">)</span>
+<span class="err">{</span><span class="n">b</span><span class="s1">&#39;b&#39;</span><span class="err">}</span>
+</pre></div>
+
+
+<p>以上是 Redis 集合的常用命令，但集合更厉害的在于组合和关联多个集合，相关命令如下：</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>用例和描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SDIFF</td>
+<td>SDIFF key-name [key-name ...] 返回存在于第一个集合，但不存在于其他集合的元素（数学上的差集运算）</td>
+</tr>
+<tr>
+<td>SDIFFSTORE</td>
+<td>SDIFFSTORE dest-key key-name [key-name ...]  将存在于第一个集合但不存在于其他集合的元素存储到 dest-key 键中</td>
+</tr>
+<tr>
+<td>SINTER</td>
+<td>SINTER key-name [key-name ...] 返回同时存在于所有给定集合中的元素（数学中的交集运算）</td>
+</tr>
+<tr>
+<td>SINTERSTORE</td>
+<td>SINTERSTORE dest-key key-name [key-name ...] 将同时存在于所有给定集合的元素存储到 dest-key 键中</td>
+</tr>
+<tr>
+<td>SUNION</td>
+<td>SUNION key-name [key-name ...] 返回至少存在于一个集合中的元素（数学中的并集运算）</td>
+</tr>
+<tr>
+<td>SUNIONSTORE</td>
+<td>SUNIONSTORE dest-key key-name [key-name ...] 降至少存在于一个集合中的元素存储到 dest-key 键中</td>
+</tr>
+</tbody>
+</table>
+<p>使用示例如下(Python 3.6)：</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">sadd</span><span class="p">(</span><span class="s1">&#39;skey1&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="s1">&#39;c&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">)</span>
+<span class="mi">4</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">sadd</span><span class="p">(</span><span class="s1">&#39;skey2&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="s1">&#39;e&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">)</span>
+<span class="mi">4</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">sdiff</span><span class="p">(</span><span class="s1">&#39;skey1&#39;</span><span class="p">,</span> <span class="s1">&#39;skey2&#39;</span><span class="p">)</span>
+<span class="err">{</span><span class="n">b</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;b&#39;</span><span class="err">}</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">sinter</span><span class="p">(</span><span class="s1">&#39;skey1&#39;</span><span class="p">,</span> <span class="s1">&#39;skey2&#39;</span><span class="p">)</span>
+<span class="err">{</span><span class="n">b</span><span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;d&#39;</span><span class="err">}</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="p">.</span><span class="n">sunion</span><span class="p">(</span><span class="s1">&#39;skey1&#39;</span><span class="p">,</span> <span class="s1">&#39;skey2&#39;</span><span class="p">)</span>
+<span class="err">{</span><span class="n">b</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;f&#39;</span><span class="err">}</span>
+</pre></div>
+            </section>
+
+            <section class="post-info">
+                <div class="post-share">
+                    <a class="twitter" href="https://twitter.com/share?text=[读书笔记]Redis实战-集合&amp;url=/2018/01/02/redis_set/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <i class="ic ic-twitter"></i><span class="hidden">Twitter</span>
+                    </a>
+                    <a class="facebook" href="https://www.facebook.com/sharer/sharer.php?u=/2018/01/02/redis_set/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <i class="ic ic-facebook"></i><span class="hidden">Facebook</span>
+                    </a>
+                    <a class="googleplus" href="https://plus.google.com/share?url=/2018/01/02/redis_set/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <i class="ic ic-googleplus"></i><span class="hidden">Google+</span>
+                    </a>
+                    <div class="clear"></div>
+                </div>
+
+
+                <div class="clear"></div>
+
+                <aside class="post-author">
+
+
+                        <figure class="post-author-avatar">
+                            <img src="https://arulrajnet.github.io/attila-demo/assets/images/avatar.png" alt="七" />
+                        </figure>
+                    <div class="post-author-bio">
+                        <h4 class="post-author-name"><a href="/author/qi.html">七</a></h4>
+                            <p class="post-author-about">爬虫 / Android / 逆向工程师，数据科学萌新，主 Python、Java、Golang</p>
+                            <span class="post-author-location"><i class="ic ic-location"></i> ShangHai/China</span>
+                            <span class="post-author-website"><a href="https://www.biubiu7.cn"><i class="ic ic-link"></i> Website</a></span>
+                        <!-- Social linkes in alphabet order. -->
+                    </div>
+                    <div class="clear"></div>
+                </aside>
+
+                </section>
+
+
+
+                    <!-- valine 评论 start  -->
+
+                <!-- Link valine 的支持文件  -->
+                <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+                <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+                <div id="vcomments"></div>
+                <script type="text/javascript">
+                    new Valine({
+                        el: '#vcomments',
+                        appId: '2WOykmLJ16hcACygaOrAxKJQ-gzGzoHsz',
+                        appKey: 'roiSV2zvTdHgyKldWSCstCu2',
+                        verify: false,
+                        placeholder: 'Just go go',
+                    })
+                </script>
+                <!-- valine end -->
+
+
+                <aside class="post-nav">
+                    <div class="clear"></div>
+                </aside>
+
+            </div>
+
+        </article>
+    </main>
+      <!-- TODO : Body class -->
+    <div id="body-class" style="display: none;" class=""></div>
+
+    <footer id="footer">
+      <div class="inner">
+        <section class="credits">
+
+
+
+          <span>Theme <a href="https://github.com/arulrajnet/attila" rel="nofollow">Attila</a></span>
+          <span>Published with <a href="https://github.com/getpelican/pelican" rel="nofollow">Pelican</a></span>
+          <span><a href="http://www.miit.gov.cn" rel="nofollow">豫ICP备18037159号</a></span>
+        </section>
+      </div>
+    </footer>
+  </section>
+
+  <script type="text/javascript" src="/theme/js/script.js"></script>
+
+</body>
+</html>

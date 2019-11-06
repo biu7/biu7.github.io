@@ -1,5 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>biubiu7 - 爬虫</title><link href="/" rel="alternate"></link><link href="/feeds/pa-chong.atom.xml" rel="self"></link><id>/</id><updated>2017-11-27T12:30:00+08:00</updated><entry><title>python3爬虫-烂大街的新浪微博之移动版网页登录</title><link href="/2017/11/26/%E6%96%B0%E6%B5%AA%E5%BE%AE%E5%8D%9A/" rel="alternate"></link><published>2017-11-26T10:01:00+08:00</published><updated>2017-11-27T12:30:00+08:00</updated><author><name>qi</name></author><id>tag:None,2017-11-26:/2017/11/26/新浪微博/</id><summary type="html">&lt;p&gt;新浪微博的模拟登录已经要被大家写烂了，不过我倒是真的没有写过，为了博客不这么空荡荡的我还是得写一写的。。。&lt;/p&gt;</summary><content type="html">&lt;h4&gt;前言&lt;/h4&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>biubiu7 - 爬虫</title><link href="/" rel="alternate"></link><link href="/feeds/pa-chong.atom.xml" rel="self"></link><id>/</id><updated>2017-12-31T00:00:00+08:00</updated><entry><title>验证码识别之 pytesseract</title><link href="/2017/12/31/tesseract/" rel="alternate"></link><published>2017-12-31T00:00:00+08:00</published><updated>2017-12-31T00:00:00+08:00</updated><author><name>qi</name></author><id>tag:None,2017-12-31:/2017/12/31/tesseract/</id><summary type="html">&lt;p&gt;使用 pytesseract 识别简单的图片验证码&lt;/p&gt;</summary><content type="html">&lt;h4&gt;前言&lt;/h4&gt;
+&lt;p&gt;前些天在工作之余接了个爬虫的私活，反爬倒是一般，但是每次翻页都要输入验证码，接入打码平台倒是省事儿，但是能不花钱还是不花钱的好，所以来看一下这个网站的验证码的识别&lt;/p&gt;
+&lt;h4&gt;安装&lt;/h4&gt;
+&lt;p&gt;系统 ubuntu 16.04
+首先，pytesseract 是依赖于 tesseract 运行的，因此我们先安装tesseract：&lt;/p&gt;
+&lt;p&gt;sudo apt install tesseract-ocr
+安装完成之后再安装 pytesseract：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;pip&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt; &lt;span class="n"&gt;pytesseract&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h4&gt;识别&lt;/h4&gt;
+&lt;p&gt;pytesseract 的使用还是比较简单的，先看我们需要识别的图片：
+&lt;img alt="" src="https://img.biubiu7.cn/blog/validatecode.jpg"&gt;
+图片比较简单，字符之间没有粘连，字体变形也不严重，目测不需要分割字符，直接识别就可以，代码如下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pytesseract&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;PIL&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Image&lt;/span&gt;
+
+&lt;span class="n"&gt;img&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Image&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;open&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;validatecode.jpg&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;code&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pytesseract&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;image_to_string&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;img&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;code&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;可以看到直接就可以识别成功。
+再获取其他图片进行识别时，发现会有识别成小写字母和数字以外的字符的情况，因此我们对识别的字符做一下限定：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;code&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pytesseract&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;image_to_string&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;img&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;-c tessedit_char_whitelist=0123456789abcdefghijklmnopqrstuvwxyz&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;这样，就限制 pytesseract 只识别小写字母和数字了，再去测试，可以发现成功率有所提高。
+不过 pytesseract 也只能对简单的字符进行识别，如果字符有粘连、扭曲、干扰线等情况，pytesseract就无能为力了，需要我们对图片进行处理后再识别。&lt;/p&gt;</content><category term="爬虫"></category></entry><entry><title>python3爬虫-烂大街的新浪微博之移动版网页登录</title><link href="/2017/11/26/%E6%96%B0%E6%B5%AA%E5%BE%AE%E5%8D%9A/" rel="alternate"></link><published>2017-11-26T10:01:00+08:00</published><updated>2017-11-27T12:30:00+08:00</updated><author><name>qi</name></author><id>tag:None,2017-11-26:/2017/11/26/新浪微博/</id><summary type="html">&lt;p&gt;新浪微博的模拟登录已经要被大家写烂了，不过我倒是真的没有写过，为了博客不这么空荡荡的我还是得写一写的。。。&lt;/p&gt;</summary><content type="html">&lt;h4&gt;前言&lt;/h4&gt;
 &lt;p&gt;新浪微博的模拟登录已经要被大家写烂了，不过我倒是真的没有写过，为了博客不这么空荡荡的我还是得写一写的。。。&lt;/p&gt;
 &lt;h4&gt;抓包&lt;/h4&gt;
 &lt;p&gt;微博的移动版页面登陆时比较简单的，我们抓包看一下,过滤掉js、css和图片请求之后：
@@ -58,4 +89,4 @@
 
 &lt;p&gt;运行：&lt;/p&gt;
 &lt;p&gt;&lt;img alt="图片4" src="https://img.biubiu7.cn/sinaweibo/sina_wap_login_4.png"&gt;&lt;/p&gt;
-&lt;p&gt;完美。微博的移动端模拟登录难度几乎为0，所以下一篇会写一下电脑网页版的登录。&lt;/p&gt;</content><category term="python"></category><category term="爬虫"></category></entry></feed>
+&lt;p&gt;完美。微博的移动端模拟登录难度几乎为0，所以下一篇会写一下电脑网页版的登录。&lt;/p&gt;</content><category term="爬虫"></category><category term="python"></category><category term="爬虫"></category></entry></feed>
