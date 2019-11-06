@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+
+  <title>逆向某疫苗预约 App 并成功帮女朋友抢到九价 HPV 疫苗</title>
+
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="origin" />
+  <meta name="generator" content="Pelican" />
+  <link href="/" rel="canonical" />
+
+  <!-- Feed -->
+        <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="biubiu7 Full Atom Feed" />
+          <link href="/feeds/{slug}.atom.xml" type="application/atom+xml" rel="alternate" title="biubiu7 Categories Atom Feed" />
+
+  <link href="/theme/css/style.css" type="text/css" rel="stylesheet" />
+
+  <!-- Code highlight color scheme -->
+      <link href="/theme/css/code_blocks/github.css" rel="stylesheet">
+
+
+  <!-- Custom fonts -->
+  <link href='https://fonts.loli.net/css?family=Montserrat:400,300' rel='stylesheet' type='text/css' />
+  <link href="https://fonts.loli.net/css?family=Lato" rel="stylesheet" type="text/css" />
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+
+  <link href="/2019/11/06/hpv_reservation/" rel="canonical" />
+
+    <meta name="description" content="逆向了某疫苗预约 App，写代码抢到 HPV 九价疫苗的故事">
+
+    <meta name="author" content="qi">
+
+
+
+
+
+<!-- Open Graph -->
+<meta property="og:site_name" content="biubiu7"/>
+<meta property="og:title" content="逆向某疫苗预约 App 并成功帮女朋友抢到九价 HPV 疫苗"/>
+<meta property="og:description" content="逆向了某疫苗预约 App，写代码抢到 HPV 九价疫苗的故事"/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:url" content="/2019/11/06/hpv_reservation/"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2019-11-06 00:00:00+08:00"/>
+<meta property="article:modified_time" content=""/>
+<meta property="article:author" content="/author/qi.html">
+<meta property="article:section" content="逆向"/>
+<meta property="og:image" content="/theme/images/post-bg.jpg">
+
+<!-- Twitter Card -->
+
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Article",
+  "name": "逆向某疫苗预约 App 并成功帮女朋友抢到九价 HPV 疫苗",
+  "headline": "逆向某疫苗预约 App 并成功帮女朋友抢到九价 HPV 疫苗",
+  "datePublished": "2019-11-06 00:00:00+08:00",
+  "dateModified": "",
+  "author": {
+    "@type": "Person",
+    "name": "qi",
+    "url": "/author/qi.html"
+  },
+  "image": "/theme/images/post-bg.jpg",
+  "url": "/2019/11/06/hpv_reservation/",
+  "description": "逆向了某疫苗预约 App，写代码抢到 HPV 九价疫苗的故事"
+}
+</script>
+</head>
+<!-- TODO : Body class -->
+<body class="home-template">
+
+<nav id="menu">
+  <a class="close-button">Close</a>
+  <div class="nav-wrapper">
+    <p class="nav-label">Menu</p>
+    <ul>
+          <li><a href="/category/ni-xiang.html" role="presentation">逆向</a></li>
+          <li><a href="/category/pa-chong.html" role="presentation">爬虫</a></li>
+          <li><a href="/category/bo-ke-xiang-guan.html" role="presentation">博客相关</a></li>
+          <li><a href="/category/za-xiang.html" role="presentation">杂项</a></li>
+
+
+    </ul>
+  </div>
+</nav>
+    <!-- Progressbar -->
+    <div class="progress-container">
+        <span class="progress-bar"></span>
+    </div>
+
+    <!-- Page Header -->
+    <!-- Set your background image for this header on the line below. -->
+    <header id="blog-header" class="has-cover">
+      <div class="inner">
+        <nav id="navigation">
+            <span id="home-button" class="nav-button">
+                <a class="home-button" href="/" title="Home"><i class="ic ic-arrow-left"></i> Home</a>
+            </span>
+          <span id="menu-button" class="nav-button">
+            <a class="menu-button"><i class="ic ic-menu"></i> Menu</a>
+          </span>
+        </nav>
+        <h1 class="post-title">逆向某疫苗预约 App 并成功帮女朋友抢到九价 HPV 疫苗</h1>
+        <!-- TODO : Proper class for headline -->
+        <span class="post-meta">
+                <a href="/author/qi.html">七</a>
+            | <time datetime="2019-11-06 00:00:00">2019-11-06 00:00:00</time>
+        </span>
+        <!-- TODO : Modified check -->
+            <div class="post-cover cover" style="background-color: black">
+      </div>
+    </header>
+
+  <section id="wrapper">
+    <a class="hidden-close"></a>
+
+    <!-- Post content -->
+    <main class="content" role="main">
+        <article class="post">
+        <div class="inner">
+            <section class="post-content">
+                <p>注：迫于最近抓了好多搞爬虫的，因此以下不出现具体的省市名及 App 名称</p>
+<p>自 HPV 疫苗国内上市已经有一年多了，然而由于疫苗产能不足的原因，各地疫苗都是供不应求。打电话给上海各个接种点得到的回复都是已经排队到一年以后了 orz...</p>
+<p>无奈之下只好各种找疫苗代约，他们真的是坐地起价啊！预约费几乎都是两千元以上，有的甚至算上疫苗一共 8888 ？？？（此处有科普：一针疫苗 + 注射费 = 1326 元，三针约四千元），简直是抢钱。</p>
+<p>算起来女朋友还有一年半才到26岁，也并不是很急，毕竟 26.5 岁之前打第一针就可以。因此开始查找上海附近有哪些地方开放线上预约的，一番查找之后（几个月过去了。。。），发现 隔壁 XX 市是在 App 上进行预约的，嘿这不就到了我的老本行了吗，是时候展现真正的技术了！</p>
+<p>下载 App 后注册账号测试，软件看起来一股外包味，本来以为怕是没加密没加固轻松搞定，没想到抓包发现加密了：</p>
+<p><img alt="" src="https://img.biubiu7.cn/blog/201911060001.jpeg"></p>
+<p>没办法，只能尝试逆向或者 Hook 看看了。</p>
+<p>逆向是有点麻烦的，所以我们先用 Frida 找一下有没有明显是加密方法的函数，有的话就省事儿了。这里介绍一个工具：Brida，他是 Brup Suite 的一个插件，需要配合 Frida 使用，效果极佳。</p>
+<p>打开 Brup Suite 和 Brida ，启动 Frida Server 然后一通操作，我们就得到了 App 的类列表，根据包名筛选一下，果然发现一个极其明显的类名：com.xxxx.xxx.utils.SecretKeyUtil，果断 Hook 掉，在 Brida 控制台会打印出类中的方法并逐个 Hook ：</p>
+<p><img alt="" src="https://img.biubiu7.cn/blog/201911060002.png"></p>
+<p>通过这些方法名我们也能看出这个类是 AES 加密的实现类，考虑到 Java 中 AES 加密是有标准库的实现的，因此 App 使用的密钥及加密模式很有可能可以直接从这个类中找到。在 App 中做一些操作，尝试触发这个类的方法，结果如图：</p>
+<p><img alt="" src="https://img.biubiu7.cn/blog/201911060003.jpeg">
+<img alt="" src="https://img.biubiu7.cn/blog/201911060004.jpeg"></p>
+<p>上图中得到两个疑似加密 key 的字符串，另外还得到了加密前的原始字符串和加密结果。虽然没有得到加密模式及 AES 使用的偏移量，但也足够我们测试出具体的加密方式了。</p>
+<p>测试加密方法的过程略过不谈。事实上对于加密方法的 Hook ，我们还可以直接 Hook Java 标准库的加密方法，以直接得到加密所需的参数。在抓包中可以看到，其实除了加密过的参数之外，还有一个疑似 MD5 处理的 sign 参数，这个参数就可以使用 Hook Java 标准库中的 MD5 方法，来得到 MD5 前的具体参数值，这个就不详细描述了，过程与上述过程类似。</p>
+            </section>
+
+            <section class="post-info">
+                <div class="post-share">
+                    <a class="twitter" href="https://twitter.com/share?text=逆向某疫苗预约 App 并成功帮女朋友抢到九价 HPV 疫苗&amp;url=/2019/11/06/hpv_reservation/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <i class="ic ic-twitter"></i><span class="hidden">Twitter</span>
+                    </a>
+                    <a class="facebook" href="https://www.facebook.com/sharer/sharer.php?u=/2019/11/06/hpv_reservation/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <i class="ic ic-facebook"></i><span class="hidden">Facebook</span>
+                    </a>
+                    <a class="googleplus" href="https://plus.google.com/share?url=/2019/11/06/hpv_reservation/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <i class="ic ic-googleplus"></i><span class="hidden">Google+</span>
+                    </a>
+                    <div class="clear"></div>
+                </div>
+
+
+                <div class="clear"></div>
+
+                <aside class="post-author">
+
+
+                        <figure class="post-author-avatar">
+                            <img src="https://arulrajnet.github.io/attila-demo/assets/images/avatar.png" alt="七" />
+                        </figure>
+                    <div class="post-author-bio">
+                        <h4 class="post-author-name"><a href="/author/qi.html">七</a></h4>
+                            <p class="post-author-about">爬虫 / Android / 逆向工程师，数据科学萌新，主 Python、Java、Golang</p>
+                            <span class="post-author-location"><i class="ic ic-location"></i> ShangHai/China</span>
+                            <span class="post-author-website"><a href="https://www.biubiu7.cn"><i class="ic ic-link"></i> Website</a></span>
+                        <!-- Social linkes in alphabet order. -->
+                    </div>
+                    <div class="clear"></div>
+                </aside>
+
+                </section>
+
+
+
+                    <!-- valine 评论 start  -->
+
+                <!-- Link valine 的支持文件  -->
+                <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+                <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+                <div id="vcomments"></div>
+                <script type="text/javascript">
+                    new Valine({
+                        el: '#vcomments',
+                        appId: '2WOykmLJ16hcACygaOrAxKJQ-gzGzoHsz',
+                        appKey: 'roiSV2zvTdHgyKldWSCstCu2',
+                        verify: false,
+                        placeholder: 'Just go go',
+                    })
+                </script>
+                <!-- valine end -->
+
+
+                <aside class="post-nav">
+                    <div class="clear"></div>
+                </aside>
+
+            </div>
+
+        </article>
+    </main>
+      <!-- TODO : Body class -->
+    <div id="body-class" style="display: none;" class=""></div>
+
+    <footer id="footer">
+      <div class="inner">
+        <section class="credits">
+
+
+
+          <span>Theme <a href="https://github.com/arulrajnet/attila" rel="nofollow">Attila</a></span>
+          <span>Published with <a href="https://github.com/getpelican/pelican" rel="nofollow">Pelican</a></span>
+          <span><a href="http://www.miit.gov.cn" rel="nofollow">豫ICP备18037159号</a></span>
+        </section>
+      </div>
+    </footer>
+  </section>
+
+  <script type="text/javascript" src="/theme/js/script.js"></script>
+
+</body>
+</html>
