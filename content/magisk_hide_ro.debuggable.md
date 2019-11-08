@@ -1,6 +1,5 @@
 Title: Magisk 导致 ro.debuggable 修改无效的排查处理
-Date: 2019-05-14 13:00
-Modified: 2019-05-14 13:00
+Date: 2018-07-14
 Category: 逆向
 Tags: 逆向, 爬虫
 Slug: Magisk-Hide-debuggable
@@ -16,13 +15,22 @@ Summary: 做逆向时免不了几个操作：设置 ro.debuggable=1、root、xpo
 
 在之前，我是使用 xposed 的模块 [BDOpener](https://github.com/riusksk/BDOpener) 来直接开启调试，而非手动修改 ro.debuggable 的值，但是本次我打算直接改掉它，一劳永逸：[修改Nexus5的boot.img - 打开系统调试	](https://bbs.pediy.com/thread-197334.htm)。
 
-在修改完 ro.debuggable=1 并重新刷入 boot.img 之后，顺手装上了 Magisk 作为 root 管理，并准备直接使用 magisk 安装 systemless 版的 xposed 框架来使用。全部装完之后，插上电脑准备看看 ro.debuggable 的修改生效了没，adb shell 进入 Android shell，getprop ro.debuggable 获取一下值，如下图：
-![图片1](https://img-1251994035.cos.ap-shanghai.myqcloud.com/blog/201905140001.png)
+在修改完 ro.debuggable=1 并重新刷入 boot.img 之后，顺手装上了 Magisk 作为
+root 管理，并准备直接使用 magisk 安装 systemless 版的 xposed
+框架来使用。全部装完之后，插上电脑准备看看 ro.debuggable 的修改生效了没，adb
+shell 进入 Android shell，getprop ro.debuggable 获取一下值，如下图：
+
+![图片1](https://img.biubiu7.cn/blog/201905140001.png)
+
 似乎没生效？？？
 #### 问题排查
 查看 default.prop 文件中 ro.debuggable 的配置：
-![图片2](https://img-1251994035.cos.ap-shanghai.myqcloud.com/blog/201905140002.png)
-配置似乎没有问题，说明之前的 boot.img 的修改是生效的。那么结合到 Magisk 的主要功能，这个大概就是 Magisk 的锅了。尝试完全卸载 Magisk 之后再查看 ro.dubuggable 的值，果然就是 1 了。
+
+![图片2](https://img.biubiu7.cn/blog/201905140002.png)
+
+配置似乎没有问题，说明之前的 boot.img 的修改是生效的。那么结合到 Magisk
+的主要功能，这个大概就是 Magisk 的锅了。尝试完全卸载 Magisk 之后再查看
+ro.dubuggable 的值，果然就是 1 了。
 
 google 了一下，发现 MagiskHide 确实会修改 ro.debuggable 等参数的值来使手机更容易通过安全检查：[此处是文档](https://github.com/Magisk-Modules-Repo/MagiskHidePropsConf#setreset-magiskhide-sensitive-props)
 
