@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+
+  <title>Android 7.0 及以上版本抓包证书设置</title>
+
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="origin" />
+  <meta name="generator" content="Pelican" />
+  <link href="/" rel="canonical" />
+
+  <!-- Feed -->
+        <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="biubiu7 Full Atom Feed" />
+          <link href="/feeds/{slug}.atom.xml" type="application/atom+xml" rel="alternate" title="biubiu7 Categories Atom Feed" />
+
+  <link href="/theme/css/style.css" type="text/css" rel="stylesheet" />
+
+  <!-- Code highlight color scheme -->
+      <link href="/theme/css/code_blocks/github.css" rel="stylesheet">
+
+
+  <!-- Custom fonts -->
+  <link href='https://fonts.loli.net/css?family=Montserrat:400,300' rel='stylesheet' type='text/css' />
+  <link href="https://fonts.loli.net/css?family=Lato" rel="stylesheet" type="text/css" />
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+
+  <link href="/2019/03/30/android7_cert/" rel="canonical" />
+
+    <meta name="description" content="应组长要求在公司 Confluence 写的教程，大致介绍一下相关工具和相关知识，因此会比较初级。第四节 - Android 7.0 及以上版本抓包证书设置">
+
+    <meta name="author" content="qi">
+
+
+
+
+
+<!-- Open Graph -->
+<meta property="og:site_name" content="biubiu7"/>
+<meta property="og:title" content="Android 7.0 及以上版本抓包证书设置"/>
+<meta property="og:description" content="应组长要求在公司 Confluence 写的教程，大致介绍一下相关工具和相关知识，因此会比较初级。第四节 - Android 7.0 及以上版本抓包证书设置"/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:url" content="/2019/03/30/android7_cert/"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2019-03-30 00:00:00+08:00"/>
+<meta property="article:modified_time" content=""/>
+<meta property="article:author" content="/author/qi.html">
+<meta property="article:section" content="逆向"/>
+<meta property="og:image" content="/theme/images/post-bg.jpg">
+
+<!-- Twitter Card -->
+
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Article",
+  "name": "Android 7.0 及以上版本抓包证书设置",
+  "headline": "Android 7.0 及以上版本抓包证书设置",
+  "datePublished": "2019-03-30 00:00:00+08:00",
+  "dateModified": "",
+  "author": {
+    "@type": "Person",
+    "name": "qi",
+    "url": "/author/qi.html"
+  },
+  "image": "/theme/images/post-bg.jpg",
+  "url": "/2019/03/30/android7_cert/",
+  "description": "应组长要求在公司 Confluence 写的教程，大致介绍一下相关工具和相关知识，因此会比较初级。第四节 - Android 7.0 及以上版本抓包证书设置"
+}
+</script>
+</head>
+<!-- TODO : Body class -->
+<body class="home-template">
+
+<nav id="menu">
+  <a class="close-button">Close</a>
+  <div class="nav-wrapper">
+    <p class="nav-label">Menu</p>
+    <ul>
+          <li><a href="/category/ni-xiang.html" role="presentation">逆向</a></li>
+          <li><a href="/category/pa-chong.html" role="presentation">爬虫</a></li>
+          <li><a href="/category/bo-ke-xiang-guan.html" role="presentation">博客相关</a></li>
+          <li><a href="/category/za-xiang.html" role="presentation">杂项</a></li>
+
+
+    </ul>
+  </div>
+</nav>
+    <!-- Progressbar -->
+    <div class="progress-container">
+        <span class="progress-bar"></span>
+    </div>
+
+    <!-- Page Header -->
+    <!-- Set your background image for this header on the line below. -->
+    <header id="blog-header" class="has-cover">
+      <div class="inner">
+        <nav id="navigation">
+            <span id="home-button" class="nav-button">
+                <a class="home-button" href="/" title="Home"><i class="ic ic-arrow-left"></i> Home</a>
+            </span>
+          <span id="menu-button" class="nav-button">
+            <a class="menu-button"><i class="ic ic-menu"></i> Menu</a>
+          </span>
+        </nav>
+        <h1 class="post-title">Android 7.0 及以上版本抓包证书设置</h1>
+        <!-- TODO : Proper class for headline -->
+        <span class="post-meta">
+                <a href="/author/qi.html">七</a>
+            | <time datetime="2019-03-30 00:00:00">2019-03-30 00:00:00</time>
+        </span>
+        <!-- TODO : Modified check -->
+            <div class="post-cover cover" style="background-color: black">
+      </div>
+    </header>
+
+  <section id="wrapper">
+    <a class="hidden-close"></a>
+
+    <!-- Post content -->
+    <main class="content" role="main">
+        <article class="post">
+        <div class="inner">
+            <section class="post-content">
+                <p>由于 Android 7.0 起 Google 更新了 Android 的安全策略，App可以选择只信任系统证书及自己的证书，这样我们传统的抓包方式就失效了。以下是几种解决办法。</p>
+<h5>将 App 逆向后修改证书策略，再重打包</h5>
+<p>老实讲，这是个虽然有用但是不怎么实用的方法，看标题就知道很麻烦了，跳过不讲</p>
+<h5>在手机获取 root 权限后，将证书放入系统证书目录</h5>
+<p>Android 的系统证书目录为 /system/etc/security/cacerts/，里边证书的命名规则是 <Certificate_Hash>.<Number> 。</p>
+<p>我们使用以下命令获取证书的 hash 值，</p>
+<div class="highlight"><pre><span></span><span class="n">openssl</span> <span class="n">x509</span> <span class="o">-</span><span class="n">subject_hash_old</span> <span class="o">-</span><span class="k">in</span> <span class="o">&lt;</span><span class="n">Certificate_File</span><span class="o">&gt;</span>
+</pre></div>
+
+
+<p>然后重命名证书为 <hash>.0，然后放入 /system/etc/security/cacerts/ 目录，再修改文件权限为 644 ，重启手机即可。</p>
+<h5>使用 Magisk 自动将证书移入系统证书目录</h5>
+<p>原理和方法二一样，只是自动化了。直接在 Magisk Manager 中搜索 Move Certificates 安装，然后重启即可。</p>
+            </section>
+
+            <section class="post-info">
+                <div class="post-share">
+                    <a class="twitter" href="https://twitter.com/share?text=Android 7.0 及以上版本抓包证书设置&amp;url=/2019/03/30/android7_cert/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <i class="ic ic-twitter"></i><span class="hidden">Twitter</span>
+                    </a>
+                    <a class="facebook" href="https://www.facebook.com/sharer/sharer.php?u=/2019/03/30/android7_cert/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <i class="ic ic-facebook"></i><span class="hidden">Facebook</span>
+                    </a>
+                    <a class="googleplus" href="https://plus.google.com/share?url=/2019/03/30/android7_cert/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <i class="ic ic-googleplus"></i><span class="hidden">Google+</span>
+                    </a>
+                    <div class="clear"></div>
+                </div>
+
+
+                <div class="clear"></div>
+
+                <aside class="post-author">
+
+
+                        <figure class="post-author-avatar">
+                            <img src="https://arulrajnet.github.io/attila-demo/assets/images/avatar.png" alt="七" />
+                        </figure>
+                    <div class="post-author-bio">
+                        <h4 class="post-author-name"><a href="/author/qi.html">七</a></h4>
+                            <p class="post-author-about">爬虫 / Android / 逆向工程师，数据科学萌新，主 Python、Java、Golang</p>
+                            <span class="post-author-location"><i class="ic ic-location"></i> ShangHai/China</span>
+                            <span class="post-author-website"><a href="https://www.biubiu7.cn"><i class="ic ic-link"></i> Website</a></span>
+                        <!-- Social linkes in alphabet order. -->
+                    </div>
+                    <div class="clear"></div>
+                </aside>
+
+                </section>
+
+
+
+                    <!-- valine 评论 start  -->
+
+                <!-- Link valine 的支持文件  -->
+                <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+                <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+                <div id="vcomments"></div>
+                <script type="text/javascript">
+                    new Valine({
+                        el: '#vcomments',
+                        appId: '2WOykmLJ16hcACygaOrAxKJQ-gzGzoHsz',
+                        appKey: 'roiSV2zvTdHgyKldWSCstCu2',
+                        verify: false,
+                        placeholder: 'Just go go',
+                    })
+                </script>
+                <!-- valine end -->
+
+
+                <aside class="post-nav">
+                    <div class="clear"></div>
+                </aside>
+
+            </div>
+
+        </article>
+    </main>
+      <!-- TODO : Body class -->
+    <div id="body-class" style="display: none;" class=""></div>
+
+    <footer id="footer">
+      <div class="inner">
+        <section class="credits">
+
+
+
+          <span>Theme <a href="https://github.com/arulrajnet/attila" rel="nofollow">Attila</a></span>
+          <span>Published with <a href="https://github.com/getpelican/pelican" rel="nofollow">Pelican</a></span>
+          <span><a href="http://www.miit.gov.cn" rel="nofollow">豫ICP备18037159号</a></span>
+        </section>
+      </div>
+    </footer>
+  </section>
+
+  <script type="text/javascript" src="/theme/js/script.js"></script>
+
+</body>
+</html>

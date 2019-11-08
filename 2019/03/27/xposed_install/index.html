@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+
+  <title>Xposed 的安装</title>
+
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="origin" />
+  <meta name="generator" content="Pelican" />
+  <link href="/" rel="canonical" />
+
+  <!-- Feed -->
+        <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="biubiu7 Full Atom Feed" />
+          <link href="/feeds/{slug}.atom.xml" type="application/atom+xml" rel="alternate" title="biubiu7 Categories Atom Feed" />
+
+  <link href="/theme/css/style.css" type="text/css" rel="stylesheet" />
+
+  <!-- Code highlight color scheme -->
+      <link href="/theme/css/code_blocks/github.css" rel="stylesheet">
+
+
+  <!-- Custom fonts -->
+  <link href='https://fonts.loli.net/css?family=Montserrat:400,300' rel='stylesheet' type='text/css' />
+  <link href="https://fonts.loli.net/css?family=Lato" rel="stylesheet" type="text/css" />
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+
+  <link href="/2019/03/27/xposed_install/" rel="canonical" />
+
+    <meta name="description" content="应组长要求在公司 Confluence 写的教程，大致介绍一下相关工具和相关知识，因此会比较初级。第二节 - Xposed 安装。">
+
+    <meta name="author" content="qi">
+
+
+
+
+
+<!-- Open Graph -->
+<meta property="og:site_name" content="biubiu7"/>
+<meta property="og:title" content="Xposed 的安装"/>
+<meta property="og:description" content="应组长要求在公司 Confluence 写的教程，大致介绍一下相关工具和相关知识，因此会比较初级。第二节 - Xposed 安装。"/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:url" content="/2019/03/27/xposed_install/"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2019-03-27 00:00:00+08:00"/>
+<meta property="article:modified_time" content=""/>
+<meta property="article:author" content="/author/qi.html">
+<meta property="article:section" content="逆向"/>
+<meta property="og:image" content="/theme/images/post-bg.jpg">
+
+<!-- Twitter Card -->
+
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Article",
+  "name": "Xposed 的安装",
+  "headline": "Xposed 的安装",
+  "datePublished": "2019-03-27 00:00:00+08:00",
+  "dateModified": "",
+  "author": {
+    "@type": "Person",
+    "name": "qi",
+    "url": "/author/qi.html"
+  },
+  "image": "/theme/images/post-bg.jpg",
+  "url": "/2019/03/27/xposed_install/",
+  "description": "应组长要求在公司 Confluence 写的教程，大致介绍一下相关工具和相关知识，因此会比较初级。第二节 - Xposed 安装。"
+}
+</script>
+</head>
+<!-- TODO : Body class -->
+<body class="home-template">
+
+<nav id="menu">
+  <a class="close-button">Close</a>
+  <div class="nav-wrapper">
+    <p class="nav-label">Menu</p>
+    <ul>
+          <li><a href="/category/ni-xiang.html" role="presentation">逆向</a></li>
+          <li><a href="/category/pa-chong.html" role="presentation">爬虫</a></li>
+          <li><a href="/category/bo-ke-xiang-guan.html" role="presentation">博客相关</a></li>
+          <li><a href="/category/za-xiang.html" role="presentation">杂项</a></li>
+
+
+    </ul>
+  </div>
+</nav>
+    <!-- Progressbar -->
+    <div class="progress-container">
+        <span class="progress-bar"></span>
+    </div>
+
+    <!-- Page Header -->
+    <!-- Set your background image for this header on the line below. -->
+    <header id="blog-header" class="has-cover">
+      <div class="inner">
+        <nav id="navigation">
+            <span id="home-button" class="nav-button">
+                <a class="home-button" href="/" title="Home"><i class="ic ic-arrow-left"></i> Home</a>
+            </span>
+          <span id="menu-button" class="nav-button">
+            <a class="menu-button"><i class="ic ic-menu"></i> Menu</a>
+          </span>
+        </nav>
+        <h1 class="post-title">Xposed 的安装</h1>
+        <!-- TODO : Proper class for headline -->
+        <span class="post-meta">
+                <a href="/author/qi.html">七</a>
+            | <time datetime="2019-03-27 00:00:00">2019-03-27 00:00:00</time>
+        </span>
+        <!-- TODO : Modified check -->
+            <div class="post-cover cover" style="background-color: black">
+      </div>
+    </header>
+
+  <section id="wrapper">
+    <a class="hidden-close"></a>
+
+    <!-- Post content -->
+    <main class="content" role="main">
+        <article class="post">
+        <div class="inner">
+            <section class="post-content">
+                <p>Xposed 是 Android 平台常用的 Hook 框架，对于抓包 / 逆向来说有不小的帮助。对于没有 Android 刷机经验的人来说装起来还是有点麻烦的，本文以组里最多的测试机 Google Nexus 5 为例，说一下详细的安装流程。</p>
+<h5>解锁</h5>
+<p>当然不是解锁屏幕的解锁。Android 手机厂商出于防止恶意刷机或用户手机丢失后信息泄露之类的考虑，默认给 bootloader 加了锁，因此刷机前需要先解开 bootloader 锁才能刷机。各手机厂商的解锁方式不同，需要自行搜索相关解锁方法。爬虫组的 Nexus 5 测试机应都是已解锁的，可以直接刷机使用，其他测试机不知。注意，解锁 bootloader 将清空手机所有数据。</p>
+<h5>刷入第三方 recovery</h5>
+<p>Android 的 recovery 用于清除手机数据、手机系统升级等，一般来说，Android 手机官方的 recovery 仅支持清除 cacha / data 分区、ota 升级等操作，而不支持刷入自定义的 zip 包，而第三方 recovery 则功能比较全面。第三方的 recovery 使用最多的应是 <a href="https://dl.twrp.me/">twrp</a> ，可自行下载对应机型的 twrp recovery 镜像，nexus 5 的 twrp 下载地址在 <a href="https://dl.twrp.me/hammerhead/">这里</a>。</p>
+<p>下载好之后，从手机的开发者选项中打开 usb 调试，把手机开机状态下连接电脑，终端输入 adb reboot bootloader （当然也可以选择关机状态下音量下加开机键进入 bootloader ），手机将重启至 bootloader，然后终端输入 fastboot flash recovery twrp.img （将 twrp.img 替换为你下载的 img 文件路径），刷入完成之后将手机重启至 recovery 即可使用。</p>
+<h5>使用 recovery 刷入 xposed 包</h5>
+<p>你可以在 <a href="https://dl-xda.xposed.info/framework/">这里</a> 找到 xposed 的 zip 安装包，需要自行根据手机安卓版本和架构下载对应的包，下载错了的话手机可是会开不了机。安卓版本与 SDK 版本对照如下：</p>
+<table>
+<thead>
+<tr>
+<th>安卓版本</th>
+<th>SDK 版本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5.0</td>
+<td>21</td>
+</tr>
+<tr>
+<td>5.1</td>
+<td>22</td>
+</tr>
+<tr>
+<td>6.0</td>
+<td>23</td>
+</tr>
+<tr>
+<td>7.0</td>
+<td>24</td>
+</tr>
+<tr>
+<td>7.1</td>
+<td>25</td>
+</tr>
+<tr>
+<td>8.0</td>
+<td>26</td>
+</tr>
+<tr>
+<td>8.1</td>
+<td>27</td>
+</tr>
+</tbody>
+</table>
+<p>将下载好的 zip 包复制到手机目录中，在 twrp 中选择 install ，然后选择你的 zip 文件，刷入。</p>
+<p>刷入完成后重启手机，检查是否有 xposed installer 应用被安装，如果没有，去 <a href="https://forum.xda-developers.com/showthread.php?t=3034811">这里</a> 下载最新版本安装即可。</p>
+<h5>附送 Magisk 安装方法</h5>
+<p>去 <a href="https://github.com/topjohnwu/Magisk/releases">这里</a> 下载最新的 release 包，依照上述方法刷入即可。</p>
+            </section>
+
+            <section class="post-info">
+                <div class="post-share">
+                    <a class="twitter" href="https://twitter.com/share?text=Xposed 的安装&amp;url=/2019/03/27/xposed_install/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <i class="ic ic-twitter"></i><span class="hidden">Twitter</span>
+                    </a>
+                    <a class="facebook" href="https://www.facebook.com/sharer/sharer.php?u=/2019/03/27/xposed_install/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <i class="ic ic-facebook"></i><span class="hidden">Facebook</span>
+                    </a>
+                    <a class="googleplus" href="https://plus.google.com/share?url=/2019/03/27/xposed_install/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <i class="ic ic-googleplus"></i><span class="hidden">Google+</span>
+                    </a>
+                    <div class="clear"></div>
+                </div>
+
+
+                <div class="clear"></div>
+
+                <aside class="post-author">
+
+
+                        <figure class="post-author-avatar">
+                            <img src="https://arulrajnet.github.io/attila-demo/assets/images/avatar.png" alt="七" />
+                        </figure>
+                    <div class="post-author-bio">
+                        <h4 class="post-author-name"><a href="/author/qi.html">七</a></h4>
+                            <p class="post-author-about">爬虫 / Android / 逆向工程师，数据科学萌新，主 Python、Java、Golang</p>
+                            <span class="post-author-location"><i class="ic ic-location"></i> ShangHai/China</span>
+                            <span class="post-author-website"><a href="https://www.biubiu7.cn"><i class="ic ic-link"></i> Website</a></span>
+                        <!-- Social linkes in alphabet order. -->
+                    </div>
+                    <div class="clear"></div>
+                </aside>
+
+                </section>
+
+
+
+                    <!-- valine 评论 start  -->
+
+                <!-- Link valine 的支持文件  -->
+                <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+                <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+                <div id="vcomments"></div>
+                <script type="text/javascript">
+                    new Valine({
+                        el: '#vcomments',
+                        appId: '2WOykmLJ16hcACygaOrAxKJQ-gzGzoHsz',
+                        appKey: 'roiSV2zvTdHgyKldWSCstCu2',
+                        verify: false,
+                        placeholder: 'Just go go',
+                    })
+                </script>
+                <!-- valine end -->
+
+
+                <aside class="post-nav">
+                    <div class="clear"></div>
+                </aside>
+
+            </div>
+
+        </article>
+    </main>
+      <!-- TODO : Body class -->
+    <div id="body-class" style="display: none;" class=""></div>
+
+    <footer id="footer">
+      <div class="inner">
+        <section class="credits">
+
+
+
+          <span>Theme <a href="https://github.com/arulrajnet/attila" rel="nofollow">Attila</a></span>
+          <span>Published with <a href="https://github.com/getpelican/pelican" rel="nofollow">Pelican</a></span>
+          <span><a href="http://www.miit.gov.cn" rel="nofollow">豫ICP备18037159号</a></span>
+        </section>
+      </div>
+    </footer>
+  </section>
+
+  <script type="text/javascript" src="/theme/js/script.js"></script>
+
+</body>
+</html>

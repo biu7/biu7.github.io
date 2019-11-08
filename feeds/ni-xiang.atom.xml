@@ -13,18 +13,215 @@
 &lt;p&gt;&lt;img alt="" src="https://img.biubiu7.cn/blog/201911060003.jpeg"&gt;
 &lt;img alt="" src="https://img.biubiu7.cn/blog/201911060004.jpeg"&gt;&lt;/p&gt;
 &lt;p&gt;上图中得到两个疑似加密 key 的字符串，另外还得到了加密前的原始字符串和加密结果。虽然没有得到加密模式及 AES 使用的偏移量，但也足够我们测试出具体的加密方式了。&lt;/p&gt;
-&lt;p&gt;测试加密方法的过程略过不谈。事实上对于加密方法的 Hook ，我们还可以直接 Hook Java 标准库的加密方法，以直接得到加密所需的参数。在抓包中可以看到，其实除了加密过的参数之外，还有一个疑似 MD5 处理的 sign 参数，这个参数就可以使用 Hook Java 标准库中的 MD5 方法，来得到 MD5 前的具体参数值，这个就不详细描述了，过程与上述过程类似。&lt;/p&gt;</content><category term="逆向"></category></entry><entry><title>Magisk 导致 ro.debuggable 修改无效的排查处理</title><link href="/2019/05/14/Magisk-Hide-debuggable/" rel="alternate"></link><published>2019-05-14T13:00:00+08:00</published><updated>2019-05-14T13:00:00+08:00</updated><author><name>qi</name></author><id>tag:None,2019-05-14:/2019/05/14/Magisk-Hide-debuggable/</id><summary type="html">&lt;p&gt;做逆向时免不了几个操作：设置 ro.debuggable=1、root、xposed 。在 supersu 被国内公司收购之后， Magisk 成了 Android 设备 root 的第一选择。但是今天发现 magisk 的安装竟然会导致 ro.debuggable=1 的设置失效？&lt;/p&gt;</summary><content type="html">&lt;h4&gt;简介&lt;/h4&gt;
+&lt;p&gt;测试加密方法的过程略过不谈。事实上对于加密方法的 Hook ，我们还可以直接 Hook Java 标准库的加密方法，以直接得到加密所需的参数。在抓包中可以看到，其实除了加密过的参数之外，还有一个疑似 MD5 处理的 sign 参数，这个参数就可以使用 Hook Java 标准库中的 MD5 方法，来得到 MD5 前的具体参数值，这个就不详细描述了，过程与上述过程类似。&lt;/p&gt;</content><category term="逆向"></category></entry><entry><title>使用 JustTrustMe 解除 SSL Pinning</title><link href="/2019/04/10/justtrustme/" rel="alternate"></link><published>2019-04-10T00:00:00+08:00</published><updated>2019-04-10T00:00:00+08:00</updated><author><name>qi</name></author><id>tag:None,2019-04-10:/2019/04/10/justtrustme/</id><summary type="html">&lt;p&gt;应组长要求在公司 Confluence 写的教程，大致介绍一下相关工具和相关知识，因此会比较初级。第五节 - 使用 JustTrustMe 解除 SSL Pinning&lt;/p&gt;</summary><content type="html">&lt;p&gt;JustTrustMe 是一个 Xposed 模块，使用时只需将 JustTrustMe 安装在手机上，并在 Xposed Installer 中启用即可。&lt;/p&gt;
+&lt;p&gt;它的原理是通过 classLoader.loadClass 去查找网络请求库，如 okhttp 的证书锁定类，找到之后直接 Hook 其证书检测的方法 。以下是 JustTrustMe 对 okhttp3 的证书锁定进行 Hook 的代码：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nv"&gt;try&lt;/span&gt; {
+    &lt;span class="nv"&gt;classLoader&lt;/span&gt;.&lt;span class="nv"&gt;loadClass&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;okhttp3.CertificatePinner&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+    &lt;span class="nv"&gt;findAndHookMethod&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;okhttp3.CertificatePinner&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;,
+          &lt;span class="nv"&gt;classLoader&lt;/span&gt;,
+          &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;check&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;,
+          &lt;span class="nv"&gt;String&lt;/span&gt;.&lt;span class="nv"&gt;class&lt;/span&gt;,
+          &lt;span class="nv"&gt;List&lt;/span&gt;.&lt;span class="nv"&gt;class&lt;/span&gt;,
+          &lt;span class="nv"&gt;new&lt;/span&gt; &lt;span class="nv"&gt;XC_MethodReplacement&lt;/span&gt;&lt;span class="ss"&gt;()&lt;/span&gt; {
+            @&lt;span class="nv"&gt;Override&lt;/span&gt;
+            &lt;span class="nv"&gt;protected&lt;/span&gt; &lt;span class="nv"&gt;Object&lt;/span&gt; &lt;span class="nv"&gt;replaceHookedMethod&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;MethodHookParam&lt;/span&gt; &lt;span class="nv"&gt;methodHookParam&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt; &lt;span class="nv"&gt;throws&lt;/span&gt; &lt;span class="nv"&gt;Throwable&lt;/span&gt; {
+                &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nv"&gt;null&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+            }
+        }&lt;span class="ss"&gt;)&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+} &lt;span class="nv"&gt;catch&lt;/span&gt; &lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;ClassNotFoundException&lt;/span&gt; &lt;span class="nv"&gt;e&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt; {
+    &lt;span class="nv"&gt;Log&lt;/span&gt;.&lt;span class="nv"&gt;d&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;TAG&lt;/span&gt;, &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;OKHTTP 3.x not found in &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="nv"&gt;currentPackageName&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt; -- not hooking&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+}
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;那么对于大部分 App 来说，由于在应用编译打包时很少会对项目依赖的第三方库进行混淆，我们并不需要修改 JustTruestMe 的代码即可使用。但是对于少部分对第三方库也进行代码混淆的 App 来说，他们对代码的混淆会直接使 JustTrustMe 查找不到证书锁定类而失效，以下是未混淆的 okhttp3 与中国电信 App 中对 okhttp3 进行混淆的结构对比图：&lt;/p&gt;
+&lt;p&gt;&lt;img alt="1" src="https://img.biubiu7.cn/blog/201904100001.png"&gt;&lt;img alt="2" src="https://img.biubiu7.cn/blog/201904100002.png"&gt;&lt;/p&gt;
+&lt;p&gt;注：.kt 文件为 Kotlin 语言代码文件，Kotlin 已被 Google 声明为 Android 官方支持的开发语言&lt;/p&gt;
+&lt;p&gt;可以看到，原本的类名被混淆为无法与原类名关联的类名，这势必会使 JustTrustMe 的 Hook 失效。&lt;/p&gt;
+&lt;h5&gt;解决代码混淆导致的失效&lt;/h5&gt;
+&lt;p&gt;我们从 github 拉下 JustTrustMe 的源码，使用全局搜索定位到 JustTrustMe 源码中与
+okhttp 有关的代码如下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nv"&gt;try&lt;/span&gt; {
+    &lt;span class="nv"&gt;classLoader&lt;/span&gt;.&lt;span class="nv"&gt;loadClass&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;okhttp3.CertificatePinner&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+    &lt;span class="nv"&gt;findAndHookMethod&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;okhttp3.CertificatePinner&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;,
+            &lt;span class="nv"&gt;classLoader&lt;/span&gt;,
+            &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;check&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;,
+            &lt;span class="nv"&gt;String&lt;/span&gt;.&lt;span class="nv"&gt;class&lt;/span&gt;,
+            &lt;span class="nv"&gt;List&lt;/span&gt;.&lt;span class="nv"&gt;class&lt;/span&gt;,
+            &lt;span class="nv"&gt;new&lt;/span&gt; &lt;span class="nv"&gt;XC_MethodReplacement&lt;/span&gt;&lt;span class="ss"&gt;()&lt;/span&gt; {
+                @&lt;span class="nv"&gt;Override&lt;/span&gt;
+                &lt;span class="nv"&gt;protected&lt;/span&gt; &lt;span class="nv"&gt;Object&lt;/span&gt; &lt;span class="nv"&gt;replaceHookedMethod&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;MethodHookParam&lt;/span&gt; &lt;span class="nv"&gt;methodHookParam&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt; &lt;span class="nv"&gt;throws&lt;/span&gt; &lt;span class="nv"&gt;Throwable&lt;/span&gt; {
+                    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nv"&gt;null&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+                }
+            }&lt;span class="ss"&gt;)&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+} &lt;span class="nv"&gt;catch&lt;/span&gt; &lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;ClassNotFoundException&lt;/span&gt; &lt;span class="nv"&gt;e&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt; {
+    &lt;span class="nv"&gt;Log&lt;/span&gt;.&lt;span class="nv"&gt;d&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;TAG&lt;/span&gt;, &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;OKHTTP 3.x not found in &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="nv"&gt;currentPackageName&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt; -- not hooking&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+    &lt;span class="o"&gt;//&lt;/span&gt; &lt;span class="nv"&gt;pass&lt;/span&gt;
+}
+
+&lt;span class="nv"&gt;try&lt;/span&gt; {
+    &lt;span class="nv"&gt;classLoader&lt;/span&gt;.&lt;span class="nv"&gt;loadClass&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;okhttp3.internal.tls.OkHostnameVerifier&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+    &lt;span class="nv"&gt;findAndHookMethod&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;okhttp3.internal.tls.OkHostnameVerifier&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;,
+            &lt;span class="nv"&gt;classLoader&lt;/span&gt;,
+            &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;verify&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;,
+            &lt;span class="nv"&gt;String&lt;/span&gt;.&lt;span class="nv"&gt;class&lt;/span&gt;,
+            &lt;span class="nv"&gt;javax&lt;/span&gt;.&lt;span class="nv"&gt;net&lt;/span&gt;.&lt;span class="nv"&gt;ssl&lt;/span&gt;.&lt;span class="nv"&gt;SSLSession&lt;/span&gt;.&lt;span class="nv"&gt;class&lt;/span&gt;,
+            &lt;span class="nv"&gt;new&lt;/span&gt; &lt;span class="nv"&gt;XC_MethodReplacement&lt;/span&gt;&lt;span class="ss"&gt;()&lt;/span&gt; {
+                @&lt;span class="nv"&gt;Override&lt;/span&gt;
+                &lt;span class="nv"&gt;protected&lt;/span&gt; &lt;span class="nv"&gt;Object&lt;/span&gt; &lt;span class="nv"&gt;replaceHookedMethod&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;MethodHookParam&lt;/span&gt; &lt;span class="nv"&gt;methodHookParam&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt; &lt;span class="nv"&gt;throws&lt;/span&gt; &lt;span class="nv"&gt;Throwable&lt;/span&gt; {
+                    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nv"&gt;true&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+                }
+            }&lt;span class="ss"&gt;)&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+} &lt;span class="nv"&gt;catch&lt;/span&gt; &lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;ClassNotFoundException&lt;/span&gt; &lt;span class="nv"&gt;e&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt; {
+    &lt;span class="nv"&gt;Log&lt;/span&gt;.&lt;span class="nv"&gt;d&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;TAG&lt;/span&gt;, &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;OKHTTP 3.x not found in &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="nv"&gt;currentPackageName&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt; -- not hooking OkHostnameVerifier.verify(String, SSLSession)&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+    &lt;span class="o"&gt;//&lt;/span&gt; &lt;span class="nv"&gt;pass&lt;/span&gt;
+}
+
+&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="nv"&gt;https&lt;/span&gt;:&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="nv"&gt;github&lt;/span&gt;.&lt;span class="nv"&gt;com&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;square&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;okhttp&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;blob&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;parent&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;.&lt;span class="mi"&gt;0&lt;/span&gt;.&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;okhttp&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;src&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;main&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;java&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;okhttp3&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;internal&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;tls&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;OkHostnameVerifier&lt;/span&gt;.&lt;span class="nv"&gt;java&lt;/span&gt;
+&lt;span class="nv"&gt;try&lt;/span&gt; {
+    &lt;span class="nv"&gt;classLoader&lt;/span&gt;.&lt;span class="nv"&gt;loadClass&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;okhttp3.internal.tls.OkHostnameVerifier&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+    &lt;span class="nv"&gt;findAndHookMethod&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;okhttp3.internal.tls.OkHostnameVerifier&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;,
+            &lt;span class="nv"&gt;classLoader&lt;/span&gt;,
+            &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;verify&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;,
+            &lt;span class="nv"&gt;String&lt;/span&gt;.&lt;span class="nv"&gt;class&lt;/span&gt;,
+            &lt;span class="nv"&gt;java&lt;/span&gt;.&lt;span class="nv"&gt;security&lt;/span&gt;.&lt;span class="nv"&gt;cert&lt;/span&gt;.&lt;span class="nv"&gt;X509Certificate&lt;/span&gt;.&lt;span class="nv"&gt;class&lt;/span&gt;,
+            &lt;span class="nv"&gt;new&lt;/span&gt; &lt;span class="nv"&gt;XC_MethodReplacement&lt;/span&gt;&lt;span class="ss"&gt;()&lt;/span&gt; {
+                @&lt;span class="nv"&gt;Override&lt;/span&gt;
+                &lt;span class="nv"&gt;protected&lt;/span&gt; &lt;span class="nv"&gt;Object&lt;/span&gt; &lt;span class="nv"&gt;replaceHookedMethod&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;MethodHookParam&lt;/span&gt; &lt;span class="nv"&gt;methodHookParam&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt; &lt;span class="nv"&gt;throws&lt;/span&gt; &lt;span class="nv"&gt;Throwable&lt;/span&gt; {
+                    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nv"&gt;true&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+                }
+            }&lt;span class="ss"&gt;)&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+} &lt;span class="nv"&gt;catch&lt;/span&gt; &lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;ClassNotFoundException&lt;/span&gt; &lt;span class="nv"&gt;e&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt; {
+    &lt;span class="nv"&gt;Log&lt;/span&gt;.&lt;span class="nv"&gt;d&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;TAG&lt;/span&gt;, &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;OKHTTP 3.x not found in &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="nv"&gt;currentPackageName&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt; -- not hooking OkHostnameVerifier.verify(String, X509)(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+    &lt;span class="o"&gt;//&lt;/span&gt; &lt;span class="nv"&gt;pass&lt;/span&gt;
+}
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;可以看到源码中共对 okhttp3 的三个方法进行了 hook ，分别是：okhttp3.CertificatePinner 类的 check 方法和 okhttp3.internal.tls.OkHostnameVerifier 的两个 verify 方法。&lt;/p&gt;
+&lt;p&gt;接下来我们对照 okhttp3 的源代码，
+分别找出对应的混淆后的类名和方法，然后在JustTrustMe 的源码中替换，并编译后安装即可。&lt;/p&gt;
+&lt;p&gt;注：使用 Andoid Studio 编译 JustTrustMe 时需在设置中关闭 Instant Run&lt;/p&gt;</content><category term="逆向"></category></entry><entry><title>Android 7.0 及以上版本抓包证书设置</title><link href="/2019/03/30/android7_cert/" rel="alternate"></link><published>2019-03-30T00:00:00+08:00</published><updated>2019-03-30T00:00:00+08:00</updated><author><name>qi</name></author><id>tag:None,2019-03-30:/2019/03/30/android7_cert/</id><summary type="html">&lt;p&gt;应组长要求在公司 Confluence 写的教程，大致介绍一下相关工具和相关知识，因此会比较初级。第四节 - Android 7.0 及以上版本抓包证书设置&lt;/p&gt;</summary><content type="html">&lt;p&gt;由于 Android 7.0 起 Google 更新了 Android 的安全策略，App可以选择只信任系统证书及自己的证书，这样我们传统的抓包方式就失效了。以下是几种解决办法。&lt;/p&gt;
+&lt;h5&gt;将 App 逆向后修改证书策略，再重打包&lt;/h5&gt;
+&lt;p&gt;老实讲，这是个虽然有用但是不怎么实用的方法，看标题就知道很麻烦了，跳过不讲&lt;/p&gt;
+&lt;h5&gt;在手机获取 root 权限后，将证书放入系统证书目录&lt;/h5&gt;
+&lt;p&gt;Android 的系统证书目录为 /system/etc/security/cacerts/，里边证书的命名规则是 &lt;Certificate_Hash&gt;.&lt;Number&gt; 。&lt;/p&gt;
+&lt;p&gt;我们使用以下命令获取证书的 hash 值，&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;openssl&lt;/span&gt; &lt;span class="n"&gt;x509&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;subject_hash_old&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;Certificate_File&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;然后重命名证书为 &lt;hash&gt;.0，然后放入 /system/etc/security/cacerts/ 目录，再修改文件权限为 644 ，重启手机即可。&lt;/p&gt;
+&lt;h5&gt;使用 Magisk 自动将证书移入系统证书目录&lt;/h5&gt;
+&lt;p&gt;原理和方法二一样，只是自动化了。直接在 Magisk Manager 中搜索 Move Certificates 安装，然后重启即可。&lt;/p&gt;</content><category term="逆向"></category></entry><entry><title>开启 Android 全局调试的几种方法</title><link href="/2019/03/30/bdopener/" rel="alternate"></link><published>2019-03-30T00:00:00+08:00</published><updated>2019-03-30T00:00:00+08:00</updated><author><name>qi</name></author><id>tag:None,2019-03-30:/2019/03/30/bdopener/</id><summary type="html">&lt;p&gt;应组长要求在公司 Confluence 写的教程，大致介绍一下相关工具和相关知识，因此会比较初级。第三节 - 开启 Android 全局调试的几种方法&lt;/p&gt;</summary><content type="html">&lt;ul&gt;
+&lt;li&gt;自己打包 AOSP 刷入手机，麻烦程度五颗星&lt;/li&gt;
+&lt;li&gt;修改 boot.img 并重新刷入，麻烦程度四颗星&lt;/li&gt;
+&lt;li&gt;使用 Xposed 模块 &lt;a href="https://github.com/riusksk/BDOpener"&gt;BDOpener&lt;/a&gt; 来开启，麻烦程度三颗星&lt;/li&gt;
+&lt;li&gt;使用 Magisk 来开启，麻烦程度两颗星&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h5&gt;方法一：&lt;/h5&gt;
+&lt;p&gt;太麻烦，且 Google 的文档很详细，就不说了，可以自己去 &lt;a href="https://source.android.google.cn/source/initializing"&gt;此处&lt;/a&gt; 看文档。&lt;/p&gt;
+&lt;h5&gt;方法二：&lt;/h5&gt;
+&lt;p&gt;也很麻烦，且效果和三、四差不多，有兴趣的就自己搜一下 Android boot.img 怎么重打包好了。&lt;/p&gt;
+&lt;h5&gt;方法三：&lt;/h5&gt;
+&lt;p&gt;首先你需要在手机上安装 Xposed 框架，截至目前 Xposed 仅支持到 Android 8 版本（基于 Magisk 的 Xposed 或许有更高的版本支持，未尝试）。&lt;/p&gt;
+&lt;p&gt;之后下载 BDOpener.apk 安装，然后在 Xposed Installer 中启用并重启手机即可。&lt;/p&gt;
+&lt;h5&gt;方法四：&lt;/h5&gt;
+&lt;p&gt;首先你需要在手机上安装 Magisk 框架，Magisk 支持 Android 各版本。&lt;/p&gt;
+&lt;p&gt;打开 Magisk Manager ，从左侧划出菜单，选择下载，搜索 BusyBox，选择结果 BusyBox for Android NDK，点击下载，选择安装。
+打开 Magisk Manager ，从左侧划出菜单，选择下载，搜索 MagiskHide，选择结果 MagiskHide Props Config，点击下载，安装，安装完成之后点击重启按钮重启手机。&lt;/p&gt;
+&lt;p&gt;手机开机之后连接电脑，终端输入 adb shell 进入手机 shell，输入 props，选择4，再选择 ro.debuggable，会提示你现在是 0 ，你确定要改成 1 吗，输入 y 确认，再输入 y 重启，重启完就完事儿了。&lt;/p&gt;
+&lt;h5&gt;确认调试已开启的方法&lt;/h5&gt;
+&lt;p&gt;手机连接电脑，终端输入 adb jdwp ，如果调试已开启，会打印出可调试的进程的 PID ，如果没有成功开启调试，自然什么都打印不出来。&lt;/p&gt;</content><category term="逆向"></category></entry><entry><title>Xposed 的安装</title><link href="/2019/03/27/xposed_install/" rel="alternate"></link><published>2019-03-27T00:00:00+08:00</published><updated>2019-03-27T00:00:00+08:00</updated><author><name>qi</name></author><id>tag:None,2019-03-27:/2019/03/27/xposed_install/</id><summary type="html">&lt;p&gt;应组长要求在公司 Confluence 写的教程，大致介绍一下相关工具和相关知识，因此会比较初级。第二节 - Xposed 安装。&lt;/p&gt;</summary><content type="html">&lt;p&gt;Xposed 是 Android 平台常用的 Hook 框架，对于抓包 / 逆向来说有不小的帮助。对于没有 Android 刷机经验的人来说装起来还是有点麻烦的，本文以组里最多的测试机 Google Nexus 5 为例，说一下详细的安装流程。&lt;/p&gt;
+&lt;h5&gt;解锁&lt;/h5&gt;
+&lt;p&gt;当然不是解锁屏幕的解锁。Android 手机厂商出于防止恶意刷机或用户手机丢失后信息泄露之类的考虑，默认给 bootloader 加了锁，因此刷机前需要先解开 bootloader 锁才能刷机。各手机厂商的解锁方式不同，需要自行搜索相关解锁方法。爬虫组的 Nexus 5 测试机应都是已解锁的，可以直接刷机使用，其他测试机不知。注意，解锁 bootloader 将清空手机所有数据。&lt;/p&gt;
+&lt;h5&gt;刷入第三方 recovery&lt;/h5&gt;
+&lt;p&gt;Android 的 recovery 用于清除手机数据、手机系统升级等，一般来说，Android 手机官方的 recovery 仅支持清除 cacha / data 分区、ota 升级等操作，而不支持刷入自定义的 zip 包，而第三方 recovery 则功能比较全面。第三方的 recovery 使用最多的应是 &lt;a href="https://dl.twrp.me/"&gt;twrp&lt;/a&gt; ，可自行下载对应机型的 twrp recovery 镜像，nexus 5 的 twrp 下载地址在 &lt;a href="https://dl.twrp.me/hammerhead/"&gt;这里&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;下载好之后，从手机的开发者选项中打开 usb 调试，把手机开机状态下连接电脑，终端输入 adb reboot bootloader （当然也可以选择关机状态下音量下加开机键进入 bootloader ），手机将重启至 bootloader，然后终端输入 fastboot flash recovery twrp.img （将 twrp.img 替换为你下载的 img 文件路径），刷入完成之后将手机重启至 recovery 即可使用。&lt;/p&gt;
+&lt;h5&gt;使用 recovery 刷入 xposed 包&lt;/h5&gt;
+&lt;p&gt;你可以在 &lt;a href="https://dl-xda.xposed.info/framework/"&gt;这里&lt;/a&gt; 找到 xposed 的 zip 安装包，需要自行根据手机安卓版本和架构下载对应的包，下载错了的话手机可是会开不了机。安卓版本与 SDK 版本对照如下：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;安卓版本&lt;/th&gt;
+&lt;th&gt;SDK 版本&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;5.0&lt;/td&gt;
+&lt;td&gt;21&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;5.1&lt;/td&gt;
+&lt;td&gt;22&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;6.0&lt;/td&gt;
+&lt;td&gt;23&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;7.0&lt;/td&gt;
+&lt;td&gt;24&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;7.1&lt;/td&gt;
+&lt;td&gt;25&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;8.0&lt;/td&gt;
+&lt;td&gt;26&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;8.1&lt;/td&gt;
+&lt;td&gt;27&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;将下载好的 zip 包复制到手机目录中，在 twrp 中选择 install ，然后选择你的 zip 文件，刷入。&lt;/p&gt;
+&lt;p&gt;刷入完成后重启手机，检查是否有 xposed installer 应用被安装，如果没有，去 &lt;a href="https://forum.xda-developers.com/showthread.php?t=3034811"&gt;这里&lt;/a&gt; 下载最新版本安装即可。&lt;/p&gt;
+&lt;h5&gt;附送 Magisk 安装方法&lt;/h5&gt;
+&lt;p&gt;去 &lt;a href="https://github.com/topjohnwu/Magisk/releases"&gt;这里&lt;/a&gt; 下载最新的 release 包，依照上述方法刷入即可。&lt;/p&gt;</content><category term="逆向"></category></entry><entry><title>爬虫工程师相关工具</title><link href="/2019/03/24/tools/" rel="alternate"></link><published>2019-03-24T00:00:00+08:00</published><updated>2019-03-24T00:00:00+08:00</updated><author><name>qi</name></author><id>tag:None,2019-03-24:/2019/03/24/tools/</id><summary type="html">&lt;p&gt;应组长要求在公司 Confluence 写的教程，大致介绍一下相关工具和相关知识，因此会比较初级。第一节 - 相关工具介绍。&lt;/p&gt;</summary><content type="html">&lt;h5&gt;抓包工具&lt;/h5&gt;
+&lt;p&gt;&lt;a href="https://www.telerik.com/fiddler"&gt;Fiddler&lt;/a&gt; / &lt;a href="https://www.charlesproxy.com/"&gt;Charles&lt;/a&gt; 个人惯用 Charles ，颜值即正义。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://play.google.com/store/apps/details?id=app.greyshirts.sslcapture"&gt;Packet Capture&lt;/a&gt; 通过在手机上创建一个 VPN 来抓包，对部分 APP 有奇效。&lt;/p&gt;
+&lt;h5&gt;代理工具&lt;/h5&gt;
+&lt;p&gt;&lt;a href="https://github.com/madeye/proxydroid"&gt;ProxyDroid&lt;/a&gt; 部分 APP 会设置请求不走代理，这时会抓不到包。可在手机上安装这个 APP 来强制所有连接通过代理。需手机获取 ROOT 权限后使用。&lt;/p&gt;
+&lt;h5&gt;Hook 工具&lt;/h5&gt;
+&lt;p&gt;&lt;a href="https://repo.xposed.info/"&gt;Xposed&lt;/a&gt; 杀手级 Hook 框架，有很多好用的模块。但是目前各大厂商对于 Xposed 的检测日趋严格，需要使用多种方法跳过对应的检测。或使用 Frida 也是不错的选择。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/topjohnwu/Magisk"&gt;Magisk&lt;/a&gt; 一个台湾同胞开发的 Android 平台框架（但是他最近却入职了苹果？？？），与 Xposed 原理不同，模块比较少，我一般搭配 Xposed 使用。同时也是目前首选的 ROOT 权限管理软件。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://www.frida.re/"&gt;Frida&lt;/a&gt; 基于 JS 的 Hook 框架，最近才开始了解，多平台可用，还在学习。&lt;/p&gt;
+&lt;h5&gt;Xposed 模块&lt;/h5&gt;
+&lt;p&gt;&lt;a href="https://github.com/Fuzion24/JustTrustMe"&gt;JustTrustMe&lt;/a&gt; 破除 SSL Pinning 有奇效，github 上的 release 不是由最新代码编译的，建议自己 clone 下来编译，我也会上传一份最新代码编译的 apk 在 confluence 。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/riusksk/BDOpener"&gt;BDOpener&lt;/a&gt; 真机调试时需开启全局 debug 开关，即设置 default.prop 中 ro.debuggable=1 。懒得修改 boot.img 重新刷机的可使用此模块直接开启。（其实使用 Magisk 开启调试更方便，以后写）&lt;/p&gt;
+&lt;h5&gt;Frida 脚本&lt;/h5&gt;
+&lt;p&gt;&lt;a href="https://github.com/WooyunDota/DroidSSLUnpinning"&gt;DroidSSLUnpinning&lt;/a&gt; 根据 JustTrustMe 搞得一份 Frida 脚本，在无法破解 Xposed 检测的时候可用。&lt;/p&gt;
+&lt;h5&gt;逆向工具&lt;/h5&gt;
+&lt;p&gt;&lt;a href="https://ibotpeaches.github.io/Apktool/"&gt;Apktool&lt;/a&gt; Android 逆向必备，可逆向，也可重打包。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/pxb1988/dex2jar"&gt;dex2jar&lt;/a&gt; Android 逆向必备，可直接转换 apk 为 jar / smali 。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://bitbucket.org/JesusFreke/smali/downloads/"&gt;smali/baksmali/smalieda&lt;/a&gt; Android 逆向必备，反编译 / 回编译 / 适用于 idea 和 Android Studio 的 smali 代码调试插件。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/skylot/jadx"&gt;jadx&lt;/a&gt; Android 逆向必备，直接反编译 apk 为 Java 源码。可用于静态分析代码，如果需要调试 smali 还是得用 smali 、 dex2jar 之类的工具。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://www.pnfsoftware.com/"&gt;JEB&lt;/a&gt; 用过它的试用版，贼好用，正式版 1080 USD / 年，迫于贫穷，可自行搜索破解版。&lt;/p&gt;
+&lt;h5&gt;调试工具&lt;/h5&gt;
+&lt;p&gt;&lt;a href="https://developer.android.com/studio"&gt;AndroidStudio&lt;/a&gt; 其实是 Android 开发工具，配合 smalidea 插件可以调试 smali 源码。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://www.hex-rays.com/products/ida/"&gt;ida&lt;/a&gt; 反汇编与动态调试工具，可用于 Android Native 层调试。瞅了一眼价格，1879 USD ，迫于贫穷，可自行搜索破解版。&lt;/p&gt;
+&lt;h5&gt;脱壳工具&lt;/h5&gt;
+&lt;p&gt;脱壳比较复杂，待续&lt;/p&gt;</content><category term="逆向"></category></entry><entry><title>Magisk 导致 ro.debuggable 修改无效的排查处理</title><link href="/2018/07/14/Magisk-Hide-debuggable/" rel="alternate"></link><published>2018-07-14T00:00:00+08:00</published><updated>2018-07-14T00:00:00+08:00</updated><author><name>qi</name></author><id>tag:None,2018-07-14:/2018/07/14/Magisk-Hide-debuggable/</id><summary type="html">&lt;p&gt;做逆向时免不了几个操作：设置 ro.debuggable=1、root、xposed 。在 supersu 被国内公司收购之后， Magisk 成了 Android 设备 root 的第一选择。但是今天发现 magisk 的安装竟然会导致 ro.debuggable=1 的设置失效？&lt;/p&gt;</summary><content type="html">&lt;h4&gt;简介&lt;/h4&gt;
 &lt;p&gt;做逆向时免不了几个操作：设置 ro.debuggable=1、root、xposed 。在 supersu 被国内公司收购之后， Magisk 成了 Android 设备 root 的第一选择。但是今天发现 magisk 的安装竟然会导致 ro.debuggable=1 的设置失效？&lt;/p&gt;
 &lt;h4&gt;前情&lt;/h4&gt;
 &lt;p&gt;之前一直使用正常的测试机 nexus 5，由于被同事借来借去，搞得手机里一团糟，因此打算直接重新刷机，还它一片碧水蓝天。nexus 5 刷机及逆向所需配置见 [此处还没写哈哈哈哈]，此处略过。&lt;/p&gt;
 &lt;p&gt;在之前，我是使用 xposed 的模块 &lt;a href="https://github.com/riusksk/BDOpener"&gt;BDOpener&lt;/a&gt; 来直接开启调试，而非手动修改 ro.debuggable 的值，但是本次我打算直接改掉它，一劳永逸：&lt;a href="https://bbs.pediy.com/thread-197334.htm"&gt;修改Nexus5的boot.img - 打开系统调试   &lt;/a&gt;。&lt;/p&gt;
-&lt;p&gt;在修改完 ro.debuggable=1 并重新刷入 boot.img 之后，顺手装上了 Magisk 作为 root 管理，并准备直接使用 magisk 安装 systemless 版的 xposed 框架来使用。全部装完之后，插上电脑准备看看 ro.debuggable 的修改生效了没，adb shell 进入 Android shell，getprop ro.debuggable 获取一下值，如下图：
-&lt;img alt="图片1" src="https://img-1251994035.cos.ap-shanghai.myqcloud.com/blog/201905140001.png"&gt;
-似乎没生效？？？&lt;/p&gt;
+&lt;p&gt;在修改完 ro.debuggable=1 并重新刷入 boot.img 之后，顺手装上了 Magisk 作为
+root 管理，并准备直接使用 magisk 安装 systemless 版的 xposed
+框架来使用。全部装完之后，插上电脑准备看看 ro.debuggable 的修改生效了没，adb
+shell 进入 Android shell，getprop ro.debuggable 获取一下值，如下图：&lt;/p&gt;
+&lt;p&gt;&lt;img alt="图片1" src="https://img.biubiu7.cn/blog/201905140001.png"&gt;&lt;/p&gt;
+&lt;p&gt;似乎没生效？？？&lt;/p&gt;
 &lt;h4&gt;问题排查&lt;/h4&gt;
-&lt;p&gt;查看 default.prop 文件中 ro.debuggable 的配置：
-&lt;img alt="图片2" src="https://img-1251994035.cos.ap-shanghai.myqcloud.com/blog/201905140002.png"&gt;
-配置似乎没有问题，说明之前的 boot.img 的修改是生效的。那么结合到 Magisk 的主要功能，这个大概就是 Magisk 的锅了。尝试完全卸载 Magisk 之后再查看 ro.dubuggable 的值，果然就是 1 了。&lt;/p&gt;
+&lt;p&gt;查看 default.prop 文件中 ro.debuggable 的配置：&lt;/p&gt;
+&lt;p&gt;&lt;img alt="图片2" src="https://img.biubiu7.cn/blog/201905140002.png"&gt;&lt;/p&gt;
+&lt;p&gt;配置似乎没有问题，说明之前的 boot.img 的修改是生效的。那么结合到 Magisk
+的主要功能，这个大概就是 Magisk 的锅了。尝试完全卸载 Magisk 之后再查看
+ro.dubuggable 的值，果然就是 1 了。&lt;/p&gt;
 &lt;p&gt;google 了一下，发现 MagiskHide 确实会修改 ro.debuggable 等参数的值来使手机更容易通过安全检查：&lt;a href="https://github.com/Magisk-Modules-Repo/MagiskHidePropsConf#setreset-magiskhide-sensitive-props"&gt;此处是文档&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;注：部分应用会检测手机是否 root、是否安装了 Magisk 、xposed 等框架、甚至是否打开了 usb 调试，比如交通银行买单吧检测 root 退出、中国移动检测 root 和 xposed 闪退或卡启动页、微信检测 xposed 封号等，MagiskHide 能够一定程度上隐藏手机的 root 及 Magisk 安装情况。&lt;/p&gt;
 &lt;h4&gt;解决&lt;/h4&gt;
