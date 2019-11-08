@@ -4,6 +4,6 @@
 * 博客主题为 [Attila](https://github.com/arulrajnet/attila)
 * CDN 使用腾讯云 CDN 
 * 评论系统使用 [Valine](https://github.com/xCss/Valine) 和 [Valine-Admin](https://github.com/DesertsP/Valine-Admin)
-* 地址为 https://www.biubiu7.cn
+* 地址为 https://blog.biubiu7.cn
 
 迫于懒，历史数据只迁移了一篇试水
